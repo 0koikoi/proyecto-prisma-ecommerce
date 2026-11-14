@@ -1,85 +1,169 @@
-# Diagnóstico y Faltantes Detectadas del Frontend — Tienda Prisma
+# Plan de Trabajo y Reparto de Tareas Frontend — Tienda Prisma
 
-Este documento recopila las faltantes, elementos incompletos y siguientes pasos técnicos detectados tras el análisis comparativo entre la guía de requerimientos (`docs/ESTILO_ECOMMERCE.md`) y la base de código actual (`frontend/`).
-
----
-
-## 1. Módulos y Pantallas de Negocio (Placeholders actuales)
-La base incluye las rutas registradas con `EmptyState` ("Módulo en construcción"), pero están pendientes de implementación real:
-
-- [ ] **M1. Portada (`frontend/src/feature/home/HomePage.jsx`)**:
-  - Hero con gradiente de marca (`from-[#f5f5f5] via-white to-[#d6efff]`), eyebrow, título, subtítulo y CTA hacia catálogo.
-  - Bloque de colecciones destacadas (3 tarjetas: Femenina, Urbana, Mascotas) con `rounded-3xl` e imágenes de fondo.
-  - Grilla o carrusel de novedades consumiendo `catalogService.getProducts()`.
-  - Bloque de confianza (envíos a todo el Perú, pagos locales/nacionales y atención vía WhatsApp).
-- [ ] **M2. Catálogo (`frontend/src/feature/catalog/CatalogPage.jsx`)**:
-  - Filtro interactivo por línea (`/catalogo/:linea`), categoría y talla.
-  - Barra lateral de filtros en escritorio (260 px en `content-card`) y drawer móvil de filtros.
-  - Selector de ordenamiento (más nuevos, precio menor/mayor).
-  - Chips de filtros aplicados con acción individual para remover y botón de "Limpiar filtros".
-  - Grilla de tarjetas responsive con botón "Ver más" (paginación por bloques).
-- [ ] **M3. Detalle de Producto (`frontend/src/feature/catalog/ProductDetailPage.jsx`)**:
-  - Galería visual (7/12 en escritorio con miniaturas y fotos en relación 3:4; carrusel en móvil).
-  - Información comercial: nombre, categoría, precio destacado con `formatCurrency`.
-  - Selector de variantes/tallas con feedback visual (chip activo, chip deshabilitado/tachado cuando stock = 0).
-  - Selector de cantidad con límite según `availableStock`.
-  - Barra de acción fija inferior en dispositivos móviles con CTA "Agregar al carrito" (`min-h-11`).
-  - Botón de consulta directa por WhatsApp con enlace prearmado.
-  - Bloque de productos relacionados de la misma línea.
-- [ ] **M5. Checkout (`frontend/src/feature/checkout/CheckoutPage.jsx`)**:
-  - Formulario con `react-hook-form` + validación `zod` y regex peruanas (`validators.js`).
-  - Captura de datos: nombre del cliente, celular de 9 dígitos (`^9\d{8}$`), dirección, referencia opcional.
-  - Selector de ámbito de entrega: `LOCAL` (Huánuco) o `NACIONAL`.
-  - Selector visual de método de pago (chips: Yape, Plin, Tarjeta, Efectivo).
-  - Columna de resumen de pedido con subtotal, cálculo/aviso de costo de envío y total.
-  - Redirección automática al catálogo si el carrito está vacío.
-- [ ] **M6. Confirmación (`frontend/src/feature/checkout/OrderConfirmationPage.jsx`)**:
-  - Lectura del código de pedido generado (`WEB-2026-XXXXX`).
-  - Resumen visual de artículos confirmados y datos de entrega.
-  - Instrucciones claras para el pago/coordinación vía WhatsApp.
-  - Botones "Seguir comprando" y "Ver estado del pedido".
-- [ ] **M7. Seguimiento de Pedido (`frontend/src/feature/tracking/OrderTrackingPage.jsx`)**:
-  - Búsqueda y consulta de pedido por código mediante `orderService.getOrderByCode(codigo)`.
-  - Línea de tiempo con los estados definidos: `PENDING`, `PREPARING`, `SHIPPED`, `DELIVERED`, `CANCELLED`.
-  - Badges semánticos por estado (`badge-neutral`, `badge-amber`, `badge-cyan`, `badge-emerald`, `badge-rose`).
-  - Información de courier y código de guía si existen.
+Este documento organiza y divide las tareas pendientes de implementación del frontend de **Tienda Prisma** de forma equilibrada entre **4 desarrolladores**, considerando la carga técnica, componentes UI a construir, integración con servicios y reglas de estilo estipuladas en `docs/ESTILO_ECOMMERCE.md`.
 
 ---
 
-## 2. Componentes UI Específicos Pendientes
+## Matriz de Distribución General
 
-- [ ] **`ProductCard` (`frontend/src/shared/components/` o `feature/catalog/components/`)**:
-  - Contenedor con `aspect-[3/4]`, `loading="lazy"`, badge de stock (`badge-amber` si stock 1–3, `badge-rose` si agotado con opacidad al 60%).
-  - Microinteracciones con `motion` (`whileHover={{ y: -2 }}`, `whileTap={{ scale: 0.96 }}`).
-  - Integración con `CartContext` o navegación a `/producto/:slug`.
-- [ ] **`SizeSelector`**:
-  - Componente reutilizable para selección de talla/color con chip en estado activo (`bg-primary text-white`), inactivo y sin stock (`line-through cursor-not-allowed`).
-- [ ] **`CartDrawer` (M4)**:
-  - Drawer lateral deslizable con `sidebar-backdrop`.
-  - Lista de productos agregados con miniatura, nombre, talla, control incremental `−` / `+`, botón para eliminar y cálculo de subtotal.
-  - Integración para abrirlo desde el botón de bolsa en `Header` y desde cualquier CTA "Agregar al carrito".
-- [ ] **Búsqueda rápida con `cmdk` (M8)**:
-  - Modal o paleta de comandos activable desde el botón de lupa del `Header` o mediante atajo de teclado (`/`).
-  - Listado de resultados instantáneos con foto miniatura, precio y enlace directo al producto.
-- [ ] **Skeleton Loaders específicos**:
-  - Diseñar skeletons con `react-loading-skeleton` para la tarjeta de producto (`ProductCardSkeleton`), el catálogo (`CatalogGridSkeleton`) y la ficha de detalle.
+| Desarrollador | Módulos Principales | Componentes / UI Clave | Servicios y Estado Clave | Carga Estimada |
+| :--- | :--- | :--- | :--- | :--- |
+| **Dev 1** | **M1. Portada** y **M8. Búsqueda Global** | Hero, Colecciones, Grilla Novedades, Paleta `cmdk` | `catalogService.getProducts()`, debounce de búsqueda | UI Marca + Interactividad global |
+| **Dev 2** | **M2. Catálogo** y **M3. Detalle (Base y Galería)** | `ProductCard`, Drawer/Sidebar Filtros, Galería 3:4 | `catalogService.getProducts()` con query params, filtros | Grilla, filtros y maquetación visual |
+| **Dev 3** | **M3. Detalle (Variantes/CTA)** y **M4. Carrito Drawer** | `SizeSelector`, Barra móvil fija, `CartDrawer` | `CartContext`, gestión de inventario y límites de stock | Estado de compra y flujo interactivo |
+| **Dev 4** | **M5. Checkout**, **M6. Confirmación** y **M7. Seguimiento** | Formularios reactivos, Resumen, Timeline de estados | `react-hook-form` + `zod`, `orderService` (crear y consultar) | Formularios, validación y trazabilidad |
 
 ---
 
-## 3. Integración y Backend
+## Dev 1: Experiencia de Descubrimiento (Portada y Búsqueda Global)
 
-- [ ] **Contrato definitivo de API Pública**:
-  - Reemplazar las rutas provisionales comentadas en `catalogService.js` y `orderService.js` (`/api/public/...`) por las rutas definitivas que el backend del e-commerce provea.
-  - Definir si el cálculo del costo de envío se resuelve dinámicamente vía API antes de enviar la orden.
-- [ ] **Imágenes de Producto**:
-  - Configurar CDN, bucket de almacenamiento o rutas estáticas de fotos reales en relación de aspecto 3:4.
-- [ ] **Pasarelas de Pago o Enlaces Directos**:
-  - Integrar SDK de pagos (Niubiz/Izipay/Culqi) o generación de QR de Yape/Plin si el flujo comercial evoluciona más allá de la coordinación por WhatsApp.
+### Responsabilidades
+1. **M1. Portada (`frontend/src/feature/home/HomePage.jsx`)**:
+   - [ ] **Sección Hero**:
+     - Fondo con gradiente de marca: `bg-gradient-to-br from-[#f5f5f5] via-white to-[#d6efff]`.
+     - Sobretítulo (eyebrow) en `text-[11px] font-extrabold tracking-[0.22em] text-gray-500 uppercase`.
+     - Título hero H1 (`text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight`).
+     - Botón principal de llamada a la acción ("Ver catálogo") hacia `/catalogo`.
+   - [ ] **Tarjetas de Colección (3 Líneas)**:
+     - Tarjetas grandes con `rounded-3xl` para **Moda Femenina**, **Moda Urbana** y **Mascotas**.
+     - Apiladas verticalmente en móvil y distribuidas en 3 columnas en escritorio (`lg:grid-cols-3`).
+     - Enlaces directos a `/catalogo/femenina`, `/catalogo/urbana` y `/catalogo/mascotas`.
+   - [ ] **Sección de Novedades**:
+     - Carga de los últimos productos consumiendo `catalogService.getProducts()`.
+     - Grilla responsiva usando el componente `ProductCard` (desarrollado por Dev 2).
+     - Estado de carga con esqueletos (`react-loading-skeleton`) y manejo silencioso si no hay novedades.
+   - [ ] **Bloque de Confianza y Beneficios**:
+     - Garantía de envíos a todo el Perú (nacional y local en Huánuco).
+     - Medios de pago (Yape, Plin, Tarjeta, Efectivo).
+     - Canal de atención directa por WhatsApp con enlace preformateado.
+
+2. **M8. Búsqueda Global (`frontend/src/feature/search/` o `shared/components/SearchPalette.jsx`)**:
+   - [ ] Implementar la paleta de comandos con la librería `cmdk` sobre `.modal-overlay`.
+   - [ ] Atajo de apertura mediante la tecla `/` y click en el icono de lupa del `Header`.
+   - [ ] Estado inicial sin texto: sugerencias rápidas por línea de producto.
+   - [ ] Búsqueda interactiva en tiempo real sobre nombres y categorías mediante `catalogService.getProducts({ search })`.
+   - [ ] Resultados con imagen en miniatura, nombre, precio (`formatCurrency`) y navegación con teclado (`Enter` / flechas) o cierre con `Esc`.
 
 ---
 
-## 4. Pruebas y Auditoría
+## Dev 2: Exploración de Catálogo y Ficha de Producto
 
-- [ ] Pruebas responsive completas en viewport de 360 px (Android / iPhone) para validación de áreas táctiles mínimas de 44 px en formularios y selectores de talla.
-- [ ] Auditoría de accesibilidad WCAG AA con Lighthouse (contrastes de texto, etiquetas ARIA en inputs dinámicos y navegación por teclado en modales y drawers).
+### Responsabilidades
+1. **Componente Compartido `ProductCard` (`frontend/src/shared/components/ProductCard.jsx`)**:
+   - [ ] Contenedor `rounded-2xl` con borde `border-gray-200` y efecto `hover:border-gray-900 hover:shadow-md`.
+   - [ ] Microinteracciones táctiles con `motion`: `whileHover={{ y: -2 }}` y `whileTap={{ scale: 0.96 }}` (respetando `prefers-reduced-motion`).
+   - [ ] Imagen en relación de aspecto `aspect-[3/4]`, `object-cover` y `loading="lazy"` con placeholder de `Package` si no hay foto.
+   - [ ] Badges automáticos de stock:
+     - Sin badge si `availableStock > 3`.
+     - `badge-amber` "Últimas N unidades" si `1 <= availableStock <= 3`.
+     - Opacidad reducida (`opacity-60`) y `badge-rose` "Agotado" si `availableStock === 0`.
+   - [ ] Visualización de chip de categoría, nombre (`line-clamp-2`) y precio con `formatCurrency`.
 
+2. **M2. Catálogo (`frontend/src/feature/catalog/CatalogPage.jsx`)**:
+   - [ ] Encabezado con título de línea o catálogo general y contador reactivo de resultados ("N productos").
+   - [ ] Panel lateral de filtros en escritorio (columna fija de 260 px en `content-card`): filtro por línea (`FEMENINA`, `URBANA`, `MASCOTAS`), categorías dinámicas y tallas.
+   - [ ] Drawer móvil de filtros: activable mediante botón inferior/flotante con `sidebar-backdrop`.
+   - [ ] Barra de ordenamiento: Más nuevos, Precio menor a mayor, Precio mayor a menor.
+   - [ ] Chips de filtros aplicados con botón de eliminación individual y botón global "Limpiar filtros".
+   - [ ] Grilla de productos responsiva (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4`).
+   - [ ] Paginación por bloques mediante botón "Ver más" (`.btn-outline`).
+   - [ ] Estados: cargando con grilla de esqueletos (`CatalogGridSkeleton`), error de red con botón "Reintentar" y estado vacío con `EmptyState` y sugerencia de resetear filtros.
+
+3. **M3. Detalle de Producto - Parte Visual y Galería (`frontend/src/feature/catalog/ProductDetailPage.jsx`)**:
+   - [ ] Layout a 2 columnas en escritorio (Galería 7/12, Información 5/12) dentro de contenedor `max-w-6xl`.
+   - [ ] Galería multimedia: visualizador principal en formato 3:4 con selector de miniaturas (carrusel deslizable en móvil).
+   - [ ] Sección inferior de "Productos relacionados" de la misma categoría o línea.
+
+---
+
+## Dev 3: Carrito, Variantes y Flujo de Intención de Compra
+
+### Responsabilidades
+1. **Componente Compartido `SizeSelector` (`frontend/src/shared/components/SizeSelector.jsx`)**:
+   - [ ] Chips de selección con altura táctil mínima de 44 px (`h-11 rounded-xl px-4 text-sm font-semibold border`).
+   - [ ] Estados del selector:
+     - Reposo: borde neutro `border-gray-300 hover:border-gray-900`.
+     - Seleccionado: activo `bg-primary text-white border-primary`.
+     - Sin stock: tachado `line-through opacity-40 cursor-not-allowed` y selección bloqueada.
+     - Foco accesible: anillo hielo `ring-3 ring-[#d6efff]`.
+
+2. **M3. Detalle de Producto - Lógica Comercial y Conversión**:
+   - [ ] Integración de datos con `catalogService.getProductBySlug(slug)`.
+   - [ ] Selector interactivo de cantidad (respetando el máximo disponible de la variante elegida).
+   - [ ] CTA principal "Agregar al carrito" (`.btn-primary .btn-lg w-full`):
+     - Validación de talla antes de agregar (mostrar feedback si el cliente no ha marcado variante).
+     - Conexión con `CartContext.addItem(variantId, quantity)`.
+     - Apertura automática del drawer del carrito o notificación mediante `ToastContext`.
+   - [ ] Botón "Consultar por WhatsApp" (`.btn-success w-full min-h-11`) con mensaje dinámico prellenado con el nombre del producto, talla y enlace.
+   - [ ] Barra inferior fija en pantalla móvil (`sticky bottom-0 bg-white/95 border-t p-3`) con precio y botón de compra para conversión inmediata.
+   - [ ] Manejo de producto agotado en su totalidad (botón deshabilitado y mensaje aclaratorio).
+
+3. **M4. Drawer del Carrito (`frontend/src/feature/cart/CartDrawer.jsx`)**:
+   - [ ] Panel lateral deslizable derecho `bg-white shadow-2xl rounded-l-3xl z-50` con `sidebar-backdrop`.
+   - [ ] Conexión global al icono del carrito en el `Header` y cierre con tecla `Esc` o botón de cierre.
+   - [ ] Listado de artículos en el carrito consumiendo `CartContext`:
+     - Miniatura de producto, nombre, talla, color y precio unitario.
+     - Controles de cantidad (`−` / `+`) invocando `updateQuantity(variantId, nextQty)`.
+     - Ajuste automático o advertencia si la cantidad supera el inventario real.
+     - Botón para eliminar artículo (`removeItem(variantId)`) con estilo `.btn-ghost`.
+   - [ ] Pie fijo del drawer:
+     - Detalle de subtotal (`formatCurrency`).
+     - Nota de "Envío calculado en el checkout".
+     - Botón primario "Ir a pagar" (`/checkout`) que cierra el drawer.
+   - [ ] Estado de carrito vacío: icono `ShoppingBag`, mensaje "Tu carrito está vacío" y botón "Explorar catálogo".
+
+---
+
+## Dev 4: Checkout, Confirmación y Seguimiento de Pedidos
+
+### Responsabilidades
+1. **M5. Proceso de Checkout (`frontend/src/feature/checkout/CheckoutPage.jsx`)**:
+   - [ ] Estructura visual responsive en `max-w-6xl`:
+     - Escritorio: formulario a la izquierda (7/12) y resumen de orden a la derecha (5/12).
+     - Móvil: resumen de compra colapsable en la parte superior y formulario continuo.
+   - [ ] Construcción del formulario con `react-hook-form` y esquema de validación estricto con `zod`:
+     - Nombre completo: mínimo 3 caracteres, letras y tildes (`validateName`).
+     - Teléfono celular: sanitización en tiempo real y validación peruana `^9\d{8}$` (`validatePhone`).
+     - Dirección de entrega y referencia opcional.
+     - Selector de ámbito de entrega: `LOCAL` (Huánuco) o `NACIONAL` (provincias).
+     - Selector visual de método de pago (chips con radio buttons): `YAPE`, `PLIN`, `TARJETA`, `EFECTIVO`.
+   - [ ] Resumen de pedido: detalle de ítems del carrito, subtotal, aviso de gastos de envío y total final.
+   - [ ] Manejo de envío con `orderService.createOrder(payload)`:
+     - Deshabilitar botón durante el envío con indicador de carga.
+     - Generación de `requestKey` único para prevenir doble envío.
+     - Vaciado del carrito con `clear()` al completar con éxito.
+     - Redirección automática a `/checkout/confirmacion` pasando el código de orden.
+     - Protección de ruta: redireccionar al catálogo si el carrito está vacío.
+
+2. **M6. Confirmación de Pedido (`frontend/src/feature/checkout/OrderConfirmationPage.jsx`)**:
+   - [ ] Pantalla de recepción con icono de confirmación en `emerald`.
+   - [ ] Destacado visual del código de pedido generado (`WEB-2026-XXXXX`).
+   - [ ] Resumen completo de los datos del cliente, método de pago y productos pedidos.
+   - [ ] Card de instrucciones con llamada directa a la acción para enviar el comprobante o coordinar entrega por WhatsApp.
+   - [ ] Botones de navegación: "Seguir comprando" (`/catalogo`) y "Ver estado del pedido" (`/pedido/:codigo`).
+
+3. **M7. Seguimiento de Pedido (`frontend/src/feature/tracking/OrderTrackingPage.jsx`)**:
+   - [ ] Consulta dinámica del código recibido por URL con `orderService.getOrderByCode(code)`.
+   - [ ] Buscador integrado para ingresar manualmente cualquier código de pedido.
+   - [ ] Cabecera con badge de estado actual (`PENDING`, `PREPARING`, `SHIPPED`, `DELIVERED`, `CANCELLED`).
+   - [ ] Línea de tiempo vertical (`Timeline`) interactiva con las etapas del pedido (completadas, actual y pendientes).
+   - [ ] Detalle de productos adquiridos y datos de envío (courier y número de tracking si aplica).
+   - [ ] Estados: cargando con skeleton, error de red y "Pedido no encontrado" con opción de reintentar.
+
+---
+
+## Criterios de Calidad y Coordinación Transversal (Obligatorio para los 4)
+
+- **Tokens e Interfaces**: Todo color, radio y tipografía debe originarse en `src/index.css` (sin estilos hexadecimales sueltos en componentes).
+- **Zonas Táctiles**: Altura táctil mínima de 44 px en cualquier botón o chip interactivo móvil.
+- **Validación de Código**: Antes de hacer commit, cada desarrollador debe ejecutar dentro de `frontend/`:
+  ```bash
+  npm run lint
+  npm run build
+  ```
+- **Ramas de Trabajo**:
+  - Dev 1: `feat/home-search`
+  - Dev 2: `feat/catalog-product-card`
+  - Dev 3: `feat/cart-size-selector`
+  - Dev 4: `feat/checkout-tracking`
+- Todas las ramas se integran a `develop` mediante Pull Request y revisión entre pares.
