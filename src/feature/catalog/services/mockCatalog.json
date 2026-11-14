@@ -1,0 +1,387 @@
+[
+  {
+    "id": 1,
+    "slug": "blusa-saten-perla",
+    "name": "Blusa de satén cuello halter Perla",
+    "line": "FEMENINA",
+    "category": "Blusas",
+    "description": "Blusa fluida en satén suave con caída ligera y acabado perlado, ideal para salidas de noche o looks semiformales.",
+    "images": [],
+    "variants": [
+      {
+        "id": 101,
+        "size": "S",
+        "color": "Marfil",
+        "salePrice": 69.9,
+        "availableStock": 6
+      },
+      {
+        "id": 102,
+        "size": "M",
+        "color": "Marfil",
+        "salePrice": 69.9,
+        "availableStock": 2
+      },
+      {
+        "id": 103,
+        "size": "L",
+        "color": "Marfil",
+        "salePrice": 69.9,
+        "availableStock": 0
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "slug": "vestido-midi-rib-negro",
+    "name": "Vestido midi tejido rib Negro",
+    "line": "FEMENINA",
+    "category": "Vestidos",
+    "description": "Vestido midi en tejido rib elástico que se adapta a la silueta con abertura lateral discreta.",
+    "images": [],
+    "variants": [
+      {
+        "id": 104,
+        "size": "S",
+        "color": "Negro",
+        "salePrice": 89.9,
+        "availableStock": 5
+      },
+      {
+        "id": 105,
+        "size": "M",
+        "color": "Negro",
+        "salePrice": 89.9,
+        "availableStock": 4
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "slug": "pantalon-palazzo-lino-arena",
+    "name": "Pantalón palazzo de lino Arena",
+    "line": "FEMENINA",
+    "category": "Pantalones",
+    "description": "Pantalón de tiro alto y pierna ancha confeccionado en mezcla fresca de lino para máxima comodidad.",
+    "images": [],
+    "variants": [
+      {
+        "id": 106,
+        "size": "S",
+        "color": "Arena",
+        "salePrice": 95.0,
+        "availableStock": 1
+      },
+      {
+        "id": 107,
+        "size": "M",
+        "color": "Arena",
+        "salePrice": 95.0,
+        "availableStock": 3
+      },
+      {
+        "id": 108,
+        "size": "L",
+        "color": "Arena",
+        "salePrice": 95.0,
+        "availableStock": 5
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "slug": "conjunto-sastre-hielo",
+    "name": "Conjunto sastre chaleco y pantalón Hielo",
+    "line": "FEMENINA",
+    "category": "Conjuntos",
+    "description": "Set de dos piezas con chaleco entallado de botones y pantalón recto en tono azul hielo.",
+    "images": [],
+    "variants": [
+      {
+        "id": 109,
+        "size": "S",
+        "color": "Azul Hielo",
+        "salePrice": 139.9,
+        "availableStock": 0
+      },
+      {
+        "id": 110,
+        "size": "M",
+        "color": "Azul Hielo",
+        "salePrice": 139.9,
+        "availableStock": 0
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "slug": "cardigan-tejido-lavanda",
+    "name": "Cárdigan corto tejido punto Lavanda",
+    "line": "FEMENINA",
+    "category": "Chompas",
+    "description": "Chompa abierta tipo cárdigan en punto suave con botones nacarados.",
+    "images": [],
+    "variants": [
+      {
+        "id": 111,
+        "size": "Única",
+        "color": "Lavanda",
+        "salePrice": 74.9,
+        "availableStock": 7
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "slug": "polera-oversize-negra",
+    "name": "Polera oversize negra",
+    "line": "URBANA",
+    "category": "Poleras",
+    "description": "Polera con capucha en algodón franela pesado de corte oversize y bolsillo canguro.",
+    "images": [],
+    "variants": [
+      {
+        "id": 201,
+        "size": "M",
+        "color": "Negro",
+        "salePrice": 59.9,
+        "availableStock": 4
+      },
+      {
+        "id": 202,
+        "size": "L",
+        "color": "Negro",
+        "salePrice": 59.9,
+        "availableStock": 2
+      },
+      {
+        "id": 203,
+        "size": "XL",
+        "color": "Negro",
+        "salePrice": 59.9,
+        "availableStock": 0
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "slug": "polo-boxy-heavy-blanco",
+    "name": "Polo boxy fit algodón pesado Blanco",
+    "line": "URBANA",
+    "category": "Polos",
+    "description": "Polo urbano de corte cuadrado en jersey 20/1 peinado con cuello rib reforzado.",
+    "images": [],
+    "variants": [
+      {
+        "id": 204,
+        "size": "S",
+        "color": "Blanco",
+        "salePrice": 45.0,
+        "availableStock": 8
+      },
+      {
+        "id": 205,
+        "size": "M",
+        "color": "Blanco",
+        "salePrice": 45.0,
+        "availableStock": 5
+      },
+      {
+        "id": 206,
+        "size": "L",
+        "color": "Blanco",
+        "salePrice": 45.0,
+        "availableStock": 3
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "slug": "jogger-cargo-ripstop-grafito",
+    "name": "Jogger cargo ripstop Grafito",
+    "line": "URBANA",
+    "category": "Joggers",
+    "description": "Pantalón jogger con múltiples bolsillos laterales con tapeta y ajuste elástico en tobillos.",
+    "images": [],
+    "variants": [
+      {
+        "id": 207,
+        "size": "30",
+        "color": "Grafito",
+        "salePrice": 89.0,
+        "availableStock": 2
+      },
+      {
+        "id": 208,
+        "size": "32",
+        "color": "Grafito",
+        "salePrice": 89.0,
+        "availableStock": 6
+      },
+      {
+        "id": 209,
+        "size": "34",
+        "color": "Grafito",
+        "salePrice": 89.0,
+        "availableStock": 0
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "slug": "casaca-cortaviento-prisma-hielo",
+    "name": "Casaca cortaviento reflectiva Hielo",
+    "line": "URBANA",
+    "category": "Casacas",
+    "description": "Cortaviento ligero impermeable con detalles reflectivos y forro de malla transpirable.",
+    "images": [],
+    "variants": [
+      {
+        "id": 210,
+        "size": "M",
+        "color": "Hielo / Negro",
+        "salePrice": 119.9,
+        "availableStock": 0
+      },
+      {
+        "id": 211,
+        "size": "L",
+        "color": "Hielo / Negro",
+        "salePrice": 119.9,
+        "availableStock": 0
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "slug": "gorra-trucker-bordada-negra",
+    "name": "Gorra urbana bordada Prisma Negra",
+    "line": "URBANA",
+    "category": "Accesorios",
+    "description": "Gorra de seis paneles en gabardina de algodón con visera curva y regulador metálico.",
+    "images": [],
+    "variants": [
+      {
+        "id": 212,
+        "size": "Única",
+        "color": "Negro",
+        "salePrice": 39.9,
+        "availableStock": 9
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "slug": "polera-polar-perro-celeste",
+    "name": "Polera polar térmica para mascota Celeste",
+    "line": "MASCOTAS",
+    "category": "Ropa para mascotas",
+    "description": "Abrigo polar suave con abertura para correa y ajuste cómodo en el pecho para días fríos.",
+    "images": [],
+    "variants": [
+      {
+        "id": 301,
+        "size": "Talla 2 (Pequeño)",
+        "color": "Celeste",
+        "salePrice": 29.9,
+        "availableStock": 5
+      },
+      {
+        "id": 302,
+        "size": "Talla 4 (Mediano)",
+        "color": "Celeste",
+        "salePrice": 34.9,
+        "availableStock": 2
+      },
+      {
+        "id": 303,
+        "size": "Talla 6 (Grande)",
+        "color": "Celeste",
+        "salePrice": 39.9,
+        "availableStock": 0
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "slug": "arnes-acolchado-antitirones-menta",
+    "name": "Arnés acolchado antitirones Menta",
+    "line": "MASCOTAS",
+    "category": "Paseo",
+    "description": "Arnés ergonómico de malla respirable con doble anillo de seguridad y bandas reflectivas.",
+    "images": [],
+    "variants": [
+      {
+        "id": 304,
+        "size": "S",
+        "color": "Menta",
+        "salePrice": 42.0,
+        "availableStock": 6
+      },
+      {
+        "id": 305,
+        "size": "M",
+        "color": "Menta",
+        "salePrice": 42.0,
+        "availableStock": 1
+      },
+      {
+        "id": 306,
+        "size": "L",
+        "color": "Menta",
+        "salePrice": 45.0,
+        "availableStock": 4
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "slug": "cama-antiestres-dona-gris",
+    "name": "Cama relajante tipo dona Gris Perla",
+    "line": "MASCOTAS",
+    "category": "Descanso",
+    "description": "Cama circular de felpa larga ultra suave con base antideslizante y relleno hipoalergénico.",
+    "images": [],
+    "variants": [
+      {
+        "id": 307,
+        "size": "60 cm",
+        "color": "Gris Perla",
+        "salePrice": 79.9,
+        "availableStock": 3
+      },
+      {
+        "id": 308,
+        "size": "80 cm",
+        "color": "Gris Perla",
+        "salePrice": 99.9,
+        "availableStock": 5
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "slug": "impermeable-capucha-amarillo-mascota",
+    "name": "Casaca impermeable con capucha Amarillo",
+    "line": "MASCOTAS",
+    "category": "Ropa para mascotas",
+    "description": "Poncho ligero resistente al agua con broches fáciles en el pecho y tiras reflectivas.",
+    "images": [],
+    "variants": [
+      {
+        "id": 309,
+        "size": "Talla 3",
+        "color": "Amarillo",
+        "salePrice": 38.0,
+        "availableStock": 4
+      },
+      {
+        "id": 310,
+        "size": "Talla 5",
+        "color": "Amarillo",
+        "salePrice": 42.0,
+        "availableStock": 0
+      }
+    ]
+  }
+]
