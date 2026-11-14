@@ -3,3 +3,7 @@ export { Input } from './Input';
 export { Modal } from './Modal';
 export { Badge } from './Badge';
 export { EmptyState } from './EmptyState';
+export { Header } from './Header';
+export { MobileMenu } from './MobileMenu';
+export { Footer } from './Footer';
+export { MainLayout } from './MainLayout';
