@@ -13,13 +13,14 @@ Esqueleto base (template) del frontend público de **Tienda Prisma** (Moda Femen
 
 ## Requisitos e instalación
 
-1. Clonar el repositorio e instalar dependencias:
+1. Clonar el repositorio, entrar a la carpeta `frontend` e instalar dependencias:
 
 ```bash
+cd frontend
 npm install
 ```
 
-2. Configurar las variables de entorno copiando el archivo de ejemplo:
+2. Configurar las variables de entorno copiando el archivo de ejemplo dentro de `frontend`:
 
 ```bash
 cp .env.example .env
@@ -31,16 +32,16 @@ cp .env.example .env
 npm run dev
 ```
 
-## Scripts disponibles
+## Scripts disponibles (dentro de `frontend/`)
 
 - `npm run dev` — Inicia el servidor local de desarrollo con Vite.
-- `npm run build` — Genera el empaquetado de producción en la carpeta `dist/`.
+- `npm run build` — Genera el empaquetado de producción en `frontend/dist/`.
 - `npm run preview` — Sirve localmente el build de producción.
 - `npm run lint` — Ejecuta `oxlint` sobre `src/`.
 
 ## Variables de entorno
 
-Definidas en `.env.example`:
+Definidas en `frontend/.env.example`:
 
 | Variable        | Valor por defecto       | Descripción                                                                                   |
 | :-------------- | :---------------------- | :-------------------------------------------------------------------------------------------- |
@@ -49,11 +50,11 @@ Definidas en `.env.example`:
 
 ## Cómo pasar de modo Mock a API real
 
-Toda la entrada de datos pasa por los servicios (`src/feature/catalog/services/catalogService.js` y `src/feature/checkout/services/orderService.js`). Ningún componente importa archivos JSON ni llama a `fetch` directamente.
+Toda la entrada de datos pasa por los servicios (`frontend/src/feature/catalog/services/catalogService.js` y `frontend/src/feature/checkout/services/orderService.js`). Ningún componente importa archivos JSON ni llama a `fetch` directamente.
 
 Para conectar con el backend real:
 
-1. En tu archivo `.env`, define la URL del servidor y desactiva el modo mock:
+1. En tu archivo `frontend/.env`, define la URL del servidor y desactiva el modo mock:
 
 ```env
 VITE_API_URL=https://tu-dominio-api.com
@@ -64,32 +65,38 @@ VITE_USE_MOCK=false
 
 ## Cómo desplegar como sitio estático
 
-1. Ejecuta el build de producción:
+1. Ejecuta el build de producción desde `frontend/`:
 
 ```bash
+cd frontend
 npm run build
 ```
 
-2. Sube el contenido de la carpeta `dist/` a cualquier proveedor de hosting estático (GitHub Pages, Netlify, Vercel, Cloudflare Pages, S3, etc.).
-3. Por defecto se utiliza `HashRouter` (`src/core/routes/AppRouter.jsx`), por lo que las rutas (`/#/catalogo`, `/#/checkout`, etc.) funcionan de inmediato sin configurar redirecciones en el servidor.
-4. Si despliegas con un servidor que redirija todas las rutas a `index.html`, sigue el comentario dentro de `src/core/routes/AppRouter.jsx` para cambiar `HashRouter` por `BrowserRouter`.
+2. Sube el contenido de la carpeta `frontend/dist/` a cualquier proveedor de hosting estático (GitHub Pages, Netlify, Vercel, Cloudflare Pages, S3, etc.).
+3. Por defecto se utiliza `HashRouter` (`frontend/src/core/routes/AppRouter.jsx`), por lo que las rutas (`/#/catalogo`, `/#/checkout`, etc.) funcionan de inmediato sin configurar redirecciones en el servidor.
+4. Si despliegas con un servidor que redirija todas las rutas a `index.html`, sigue el comentario dentro de `frontend/src/core/routes/AppRouter.jsx` para cambiar `HashRouter` por `BrowserRouter`.
 
 ## Estructura del proyecto
 
 ```text
-src/
-├── core/
-│   ├── api/            # apiClient.js y control de VITE_USE_MOCK
-│   ├── context/        # CartContext y ToastContext
-│   └── routes/         # AppRouter.jsx (HashRouter)
-├── feature/
-│   ├── home/           # Portada (placeholder)
-│   ├── catalog/        # Catálogo, Detalle (placeholders) y catalogService + mockCatalog.json
-│   ├── checkout/       # Checkout, Confirmación (placeholders) y orderService
-│   ├── tracking/       # Seguimiento de pedido (placeholder)
-│   └── system/         # Página 404 terminada
-└── shared/
-    ├── components/     # Button, Input, Modal, Badge, EmptyState, Header, MobileMenu, Footer, MainLayout
-    ├── constants/      # Líneas de negocio y datos de contacto
-    └── utils/          # formatters.js (PEN / es-PE) y validators.js
+frontend/
+├── src/
+│   ├── core/
+│   │   ├── api/            # apiClient.js y control de VITE_USE_MOCK
+│   │   ├── context/        # CartContext y ToastContext
+│   │   └── routes/         # AppRouter.jsx (HashRouter)
+│   ├── feature/
+│   │   ├── home/           # Portada (placeholder)
+│   │   ├── catalog/        # Catálogo, Detalle (placeholders) y catalogService + mockCatalog.json
+│   │   ├── checkout/       # Checkout, Confirmación (placeholders) y orderService
+│   │   ├── tracking/       # Seguimiento de pedido (placeholder)
+│   │   └── system/         # Página 404 terminada
+│   └── shared/
+│       ├── components/     # Button, Input, Modal, Badge, EmptyState, Header, MobileMenu, Footer, MainLayout
+│       ├── constants/      # Líneas de negocio y datos de contacto
+│       └── utils/          # formatters.js (PEN / es-PE) y validators.js
+docs/
+├── ESTILO_ECOMMERCE.md     # Guía oficial y fuente de verdad de estilos y componentes
+├── DECISIONES.md           # Registro de decisiones técnicas tomadas en la base
+└── FALTANTES_FRONTEND.md   # Diagnóstico de módulos y componentes pendientes de desarrollo
 ```
