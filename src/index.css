@@ -1,0 +1,188 @@
+/* src/index.css */
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1c1c1c;
+  --color-primary-hover: #333333;
+  --color-secondary: #d6efff;
+  --color-secondary-strong: #bce3ff;
+  --color-bg: #f5f5f5;
+  --color-surface-hover: #f2f8fd;
+
+  --color-emerald: #059669;
+  --color-emerald-text: #047857;
+  --color-emerald-soft: #ecfdf5;
+  --color-emerald-border: #a7f3d0;
+
+  --color-amber: #d97706;
+  --color-amber-text: #b45309;
+  --color-amber-soft: #fffbeb;
+  --color-amber-border: #fde68a;
+
+  --color-rose: #dc2626;
+  --color-rose-soft: #fef2f2;
+  --color-rose-border: #fecaca;
+
+  --color-purple: #7c3aed;
+  --color-purple-soft: #f5f3ff;
+  --color-purple-border: #ddd6fe;
+
+  --color-cyan: #0891b2;
+  --color-cyan-soft: #ecfeff;
+  --color-cyan-border: #a5f3fc;
+
+  --color-scrollbar: #d1d5db;
+
+  --font-sans:
+    "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-scrollbar);
+    border-radius: 9999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-primary);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-primary);
+    font-family: var(--font-sans);
+    @apply antialiased selection:bg-secondary selection:text-primary;
+  }
+
+  h1 {
+    @apply text-2xl font-bold tracking-tight;
+  }
+  h2 {
+    @apply text-xl font-semibold tracking-tight;
+  }
+  h3 {
+    @apply text-base font-semibold;
+  }
+}
+
+@layer components {
+  /* Botones */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-semibold uppercase tracking-wider rounded-xl border transition-all duration-200 ease-in-out active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-secondary focus-visible:border-primary;
+  }
+  .btn-sm {
+    @apply px-3.5 py-1.5 text-xs;
+  }
+  .btn-md {
+    @apply px-4 py-2.5 text-xs min-h-11 sm:min-h-0;
+  }
+  .btn-lg {
+    @apply px-6 py-3.5 text-sm min-h-11;
+  }
+  .btn-primary {
+    @apply bg-primary text-white border-primary hover:bg-primary-hover shadow-sm;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-primary border-secondary-strong hover:bg-secondary-strong shadow-sm;
+  }
+  .btn-outline {
+    @apply bg-white text-primary border-gray-300 hover:bg-bg shadow-sm;
+  }
+  .btn-success {
+    @apply bg-emerald text-white border-emerald hover:opacity-95 shadow-sm;
+  }
+  .btn-danger {
+    @apply bg-rose text-white border-rose hover:opacity-95 shadow-sm;
+  }
+  .btn-ghost {
+    @apply bg-transparent text-primary border-transparent hover:bg-gray-100;
+  }
+
+  /* Formularios */
+  .input-field-group {
+    @apply flex flex-col gap-1.5;
+  }
+  .input-label {
+    @apply text-[11px] font-bold uppercase tracking-wider text-gray-700;
+  }
+  .input-wrapper-ice {
+    @apply flex items-center gap-2 bg-white border border-gray-300 rounded-xl px-3.5 transition-all duration-200 ease-in-out focus-within:ring-3 focus-within:ring-secondary focus-within:border-primary;
+  }
+  .input-element {
+    @apply w-full h-12 sm:h-10 text-base sm:text-sm font-medium text-primary bg-transparent placeholder:text-gray-400 focus:outline-none;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider border;
+  }
+  .badge-neutral {
+    @apply bg-gray-100 text-gray-700 border-gray-200;
+  }
+  .badge-ice {
+    @apply bg-secondary text-primary border-secondary-strong;
+  }
+  .badge-emerald {
+    @apply bg-emerald-soft text-emerald-text border-emerald-border;
+  }
+  .badge-amber {
+    @apply bg-amber-soft text-amber-text border-amber-border;
+  }
+  .badge-rose {
+    @apply bg-rose-soft text-rose border-rose-border;
+  }
+  .badge-purple {
+    @apply bg-purple-soft text-purple border-purple-border;
+  }
+  .badge-cyan {
+    @apply bg-cyan-soft text-cyan border-cyan-border;
+  }
+
+  /* Tarjetas y modales */
+  .content-card {
+    @apply bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out;
+  }
+  .modal-overlay {
+    @apply fixed inset-0 bg-primary/60 backdrop-blur-md z-50 flex items-center justify-center p-4;
+  }
+  .modal-content {
+    @apply bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-lg overflow-hidden;
+  }
+  .sidebar-backdrop {
+    @apply fixed inset-0 bg-primary/60 backdrop-blur-sm z-40 transition-opacity duration-300;
+  }
+
+  /* Navegación */
+  .nav-item {
+    @apply inline-flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-secondary;
+  }
+  .nav-item-active {
+    @apply bg-secondary text-primary font-bold;
+  }
+
+  /* Encabezados de página y tienda (store-*) */
+  .page-title {
+    @apply text-2xl font-bold tracking-tight text-primary;
+  }
+  .page-subtitle {
+    @apply text-sm text-gray-500;
+  }
+  .store-header {
+    @apply h-16 bg-white/95 backdrop-blur-md border-b border-gray-200/80 sticky top-0 z-30;
+  }
+  .store-brand-badge {
+    @apply inline-flex items-center gap-2 font-extrabold tracking-tight text-primary text-lg focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-secondary rounded-xl px-1.5 py-1;
+  }
+  .store-container {
+    @apply max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8;
+  }
+}
