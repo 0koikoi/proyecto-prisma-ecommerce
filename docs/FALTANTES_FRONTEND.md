@@ -82,3 +82,4 @@ La base incluye las rutas registradas con `EmptyState` ("Módulo en construcció
 
 - [ ] Pruebas responsive completas en viewport de 360 px (Android / iPhone) para validación de áreas táctiles mínimas de 44 px en formularios y selectores de talla.
 - [ ] Auditoría de accesibilidad WCAG AA con Lighthouse (contrastes de texto, etiquetas ARIA en inputs dinámicos y navegación por teclado en modales y drawers).
+
