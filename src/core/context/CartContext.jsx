@@ -107,7 +107,7 @@ export function CartProvider({ children }) {
         items
           .reduce((sum, item) => {
             const catalogInfo = findVariantInCatalog(item.variantId);
-            const unitPrice = catalogInfo?.salePrice ?? Number(item.salePrice) ?? 0;
+            const unitPrice = catalogInfo?.salePrice ?? (Number(item.salePrice) || 0);
             return sum + unitPrice * (Number(item.quantity) || 0);
           }, 0)
           .toFixed(2),

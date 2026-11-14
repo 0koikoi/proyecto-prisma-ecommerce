@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { CreditCard, Instagram, MapPin, MessageCircle } from 'lucide-react';
+import { AtSign, CreditCard, MapPin, MessageCircle } from 'lucide-react';
 import { STORE_CONTACT, STORE_LINES } from '../constants/storeLines';
 
 export function Footer() {
@@ -71,7 +71,7 @@ export function Footer() {
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <Instagram
+                <AtSign
                   className="w-4 h-4 text-secondary shrink-0 mt-0.5"
                   aria-hidden="true"
                 />
