@@ -3,20 +3,27 @@ import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
 import { MobileMenu } from './MobileMenu';
 import { Footer } from './Footer';
+import { SearchPalette } from './SearchPalette';
 
 export function MainLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col bg-bg text-primary">
       <Header
         onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
-        onOpenSearch={() => {}}
+        onOpenSearch={() => setIsSearchOpen(true)}
         onOpenCart={() => {}}
       />
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+      />
+      <SearchPalette
+        isOpen={isSearchOpen}
+        onOpen={() => setIsSearchOpen(true)}
+        onClose={() => setIsSearchOpen(false)}
       />
       <main className="flex-1 w-full store-container">
         <Outlet />
