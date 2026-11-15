@@ -7,4 +7,3 @@ export { Header } from './Header';
 export { MobileMenu } from './MobileMenu';
 export { Footer } from './Footer';
 export { MainLayout } from './MainLayout';
-export { ProductCard } from './ProductCard';
