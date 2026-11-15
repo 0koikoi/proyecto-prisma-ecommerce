@@ -50,29 +50,29 @@ Este documento organiza y divide las tareas pendientes de implementación del fr
 
 ### Responsabilidades
 1. **Componente Compartido `ProductCard` (`frontend/src/shared/components/ProductCard.jsx`)**:
-   - [ ] Contenedor `rounded-2xl` con borde `border-gray-200` y efecto `hover:border-gray-900 hover:shadow-md`.
-   - [ ] Microinteracciones táctiles con `motion`: `whileHover={{ y: -2 }}` y `whileTap={{ scale: 0.96 }}` (respetando `prefers-reduced-motion`).
-   - [ ] Imagen en relación de aspecto `aspect-[3/4]`, `object-cover` y `loading="lazy"` con placeholder de `Package` si no hay foto.
-   - [ ] Badges automáticos de stock:
+   - [x] Contenedor `rounded-2xl` con borde `border-gray-200` y efecto `hover:border-gray-900 hover:shadow-md`.
+   - [x] Microinteracciones táctiles con `motion`: `whileHover={{ y: -2 }}` y `whileTap={{ scale: 0.96 }}` (respetando `prefers-reduced-motion`).
+   - [x] Imagen en relación de aspecto `aspect-[3/4]`, `object-cover` y `loading="lazy"` con placeholder de `Package` si no hay foto.
+   - [x] Badges automáticos de stock:
      - Sin badge si `availableStock > 3`.
      - `badge-amber` "Últimas N unidades" si `1 <= availableStock <= 3`.
      - Opacidad reducida (`opacity-60`) y `badge-rose` "Agotado" si `availableStock === 0`.
-   - [ ] Visualización de chip de categoría, nombre (`line-clamp-2`) y precio con `formatCurrency`.
+   - [x] Visualización de chip de categoría, nombre (`line-clamp-2`) y precio con `formatCurrency`.
 
 2. **M2. Catálogo (`frontend/src/feature/catalog/CatalogPage.jsx`)**:
-   - [ ] Encabezado con título de línea o catálogo general y contador reactivo de resultados ("N productos").
-   - [ ] Panel lateral de filtros en escritorio (columna fija de 260 px en `content-card`): filtro por línea (`FEMENINA`, `URBANA`, `MASCOTAS`), categorías dinámicas y tallas.
-   - [ ] Drawer móvil de filtros: activable mediante botón inferior/flotante con `sidebar-backdrop`.
-   - [ ] Barra de ordenamiento: Más nuevos, Precio menor a mayor, Precio mayor a menor.
-   - [ ] Chips de filtros aplicados con botón de eliminación individual y botón global "Limpiar filtros".
-   - [ ] Grilla de productos responsiva (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4`).
-   - [ ] Paginación por bloques mediante botón "Ver más" (`.btn-outline`).
-   - [ ] Estados: cargando con grilla de esqueletos (`CatalogGridSkeleton`), error de red con botón "Reintentar" y estado vacío con `EmptyState` y sugerencia de resetear filtros.
+   - [x] Encabezado con título de línea o catálogo general y contador reactivo de resultados ("N productos").
+   - [x] Panel lateral de filtros en escritorio (columna fija de 260 px en `content-card`): filtro por línea (`FEMENINA`, `URBANA`, `MASCOTAS`), categorías dinámicas y tallas.
+   - [x] Drawer móvil de filtros: activable mediante botón inferior/flotante con `sidebar-backdrop`.
+   - [x] Barra de ordenamiento: Más nuevos, Precio menor a mayor, Precio mayor a menor.
+   - [x] Chips de filtros aplicados con botón de eliminación individual y botón global "Limpiar filtros".
+   - [x] Grilla de productos responsiva (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4`).
+   - [x] Paginación por bloques mediante botón "Ver más" (`.btn-outline`).
+   - [x] Estados: cargando con grilla de esqueletos (`CatalogGridSkeleton`), error de red con botón "Reintentar" y estado vacío con `EmptyState` y sugerencia de resetear filtros.
 
 3. **M3. Detalle de Producto - Parte Visual y Galería (`frontend/src/feature/catalog/ProductDetailPage.jsx`)**:
-   - [ ] Layout a 2 columnas en escritorio (Galería 7/12, Información 5/12) dentro de contenedor `max-w-6xl`.
-   - [ ] Galería multimedia: visualizador principal en formato 3:4 con selector de miniaturas (carrusel deslizable en móvil).
-   - [ ] Sección inferior de "Productos relacionados" de la misma categoría o línea.
+   - [x] Layout a 2 columnas en escritorio (Galería 7/12, Información 5/12) dentro de contenedor `max-w-6xl`.
+   - [x] Galería multimedia: visualizador principal en formato 3:4 con selector de miniaturas (carrusel deslizable en móvil).
+   - [x] Sección inferior de "Productos relacionados" de la misma categoría o línea.
 
 ---
 
