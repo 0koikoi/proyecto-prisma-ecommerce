@@ -87,12 +87,12 @@ frontend/
 │   │   └── routes/         # AppRouter.jsx (HashRouter)
 │   ├── feature/
 │   │   ├── home/           # Portada (placeholder)
-│   │   ├── catalog/        # Catálogo, Detalle (placeholders) y catalogService + mockCatalog.json
+│   │   ├── catalog/        # Catálogo, detalle de producto y catalogService + mockCatalog.json
 │   │   ├── checkout/       # Checkout, Confirmación (placeholders) y orderService
 │   │   ├── tracking/       # Seguimiento de pedido (placeholder)
 │   │   └── system/         # Página 404 terminada
 │   └── shared/
-│       ├── components/     # Button, Input, Modal, Badge, EmptyState, Header, MobileMenu, Footer, MainLayout
+│       ├── components/     # Button, Input, Modal, Badge, EmptyState, ProductCard, Header, MobileMenu, Footer, MainLayout
 │       ├── constants/      # Líneas de negocio y datos de contacto
 │       └── utils/          # formatters.js (PEN / es-PE) y validators.js
 docs/
