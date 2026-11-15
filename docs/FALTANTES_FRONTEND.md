@@ -80,37 +80,37 @@ Este documento organiza y divide las tareas pendientes de implementación del fr
 
 ### Responsabilidades
 1. **Componente Compartido `SizeSelector` (`frontend/src/shared/components/SizeSelector.jsx`)**:
-   - [ ] Chips de selección con altura táctil mínima de 44 px (`h-11 rounded-xl px-4 text-sm font-semibold border`).
-   - [ ] Estados del selector:
+   - [x] Chips de selección con altura táctil mínima de 44 px (`h-11 rounded-xl px-4 text-sm font-semibold border`).
+   - [x] Estados del selector:
      - Reposo: borde neutro `border-gray-300 hover:border-gray-900`.
      - Seleccionado: activo `bg-primary text-white border-primary`.
      - Sin stock: tachado `line-through opacity-40 cursor-not-allowed` y selección bloqueada.
      - Foco accesible: anillo hielo `ring-3 ring-[#d6efff]`.
 
 2. **M3. Detalle de Producto - Lógica Comercial y Conversión**:
-   - [ ] Integración de datos con `catalogService.getProductBySlug(slug)`.
-   - [ ] Selector interactivo de cantidad (respetando el máximo disponible de la variante elegida).
-   - [ ] CTA principal "Agregar al carrito" (`.btn-primary .btn-lg w-full`):
+   - [x] Integración de datos con `catalogService.getProductBySlug(slug)`.
+   - [x] Selector interactivo de cantidad (respetando el máximo disponible de la variante elegida).
+   - [x] CTA principal "Agregar al carrito" (`.btn-primary .btn-lg w-full`):
      - Validación de talla antes de agregar (mostrar feedback si el cliente no ha marcado variante).
      - Conexión con `CartContext.addItem(variantId, quantity)`.
      - Apertura automática del drawer del carrito o notificación mediante `ToastContext`.
-   - [ ] Botón "Consultar por WhatsApp" (`.btn-success w-full min-h-11`) con mensaje dinámico prellenado con el nombre del producto, talla y enlace.
-   - [ ] Barra inferior fija en pantalla móvil (`sticky bottom-0 bg-white/95 border-t p-3`) con precio y botón de compra para conversión inmediata.
-   - [ ] Manejo de producto agotado en su totalidad (botón deshabilitado y mensaje aclaratorio).
+   - [x] Botón "Consultar por WhatsApp" (`.btn-success w-full min-h-11`) con mensaje dinámico prellenado con el nombre del producto, talla y enlace.
+   - [x] Barra inferior fija en pantalla móvil (`sticky bottom-0 bg-white/95 border-t p-3`) con precio y botón de compra para conversión inmediata.
+   - [x] Manejo de producto agotado en su totalidad (botón deshabilitado y mensaje aclaratorio).
 
 3. **M4. Drawer del Carrito (`frontend/src/feature/cart/CartDrawer.jsx`)**:
-   - [ ] Panel lateral deslizable derecho `bg-white shadow-2xl rounded-l-3xl z-50` con `sidebar-backdrop`.
-   - [ ] Conexión global al icono del carrito en el `Header` y cierre con tecla `Esc` o botón de cierre.
-   - [ ] Listado de artículos en el carrito consumiendo `CartContext`:
+   - [x] Panel lateral deslizable derecho `bg-white shadow-2xl rounded-l-3xl z-50` con `sidebar-backdrop`.
+   - [x] Conexión global al icono del carrito en el `Header` y cierre con tecla `Esc` o botón de cierre.
+   - [x] Listado de artículos en el carrito consumiendo `CartContext`:
      - Miniatura de producto, nombre, talla, color y precio unitario.
      - Controles de cantidad (`−` / `+`) invocando `updateQuantity(variantId, nextQty)`.
      - Ajuste automático o advertencia si la cantidad supera el inventario real.
      - Botón para eliminar artículo (`removeItem(variantId)`) con estilo `.btn-ghost`.
-   - [ ] Pie fijo del drawer:
+   - [x] Pie fijo del drawer:
      - Detalle de subtotal (`formatCurrency`).
      - Nota de "Envío calculado en el checkout".
      - Botón primario "Ir a pagar" (`/checkout`) que cierra el drawer.
-   - [ ] Estado de carrito vacío: icono `ShoppingBag`, mensaje "Tu carrito está vacío" y botón "Explorar catálogo".
+   - [x] Estado de carrito vacío: icono `ShoppingBag`, mensaje "Tu carrito está vacío" y botón "Explorar catálogo".
 
 ---
 

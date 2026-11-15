@@ -21,3 +21,10 @@ Este documento registra las decisiones adoptadas al construir el template base d
 ## 5. Nombre del archivo de guía de estilo
 - **Contexto:** El repositorio tenía inicialmente `docs/Estilo del ecommerce.md`, mientras que las instrucciones referencian `docs/ESTILO_ECOMMERCE.md`.
 - **Decisión:** Se conservaron ambos nombres en `docs/` con el mismo contenido para evitar enlaces rotos en herramientas o referencias del equipo.
+
+## 6. Dev 3: variantes y carrito
+- **Selección:** `SizeSelector` identifica cada combinación talla/color por `variant.id`. La cantidad máxima para agregar descuenta las unidades de esa variante que ya están en el carrito. El precio y el mensaje de WhatsApp cambian con la selección; el enlace conserva la ruta del `HashRouter`.
+- **Inventario y persistencia:** `cartState.js` valida cantidades enteras, agrupa duplicados y recupera precios y disponibilidad mediante `findVariantInCatalog`. Revalida al restaurar, modificar y abrir el carrito. Las cantidades excesivas se ajustan con aviso; los artículos agotados o eliminados permanecen visibles para quitarlos y bloquean el CTA al checkout. Su importe no forma parte del subtotal.
+- **Accesibilidad:** el drawer usa `dialog.showModal()` para mantener el foco dentro y hacer inerte el fondo. Se cierra con Escape, botón o backdrop; recupera el foco y bloquea el scroll del documento. Ocupa todo el ancho en móvil y respeta movimiento reducido y áreas seguras.
+- **Integración:** se conserva la firma `addItem(variantId, quantity)` y se añaden `isOpen`, `openCart`, `closeCart` y `canCheckout`. La imagen principal es una base para la galería de Dev 2; checkout sigue siendo responsabilidad de Dev 4. Este flujo está validado con el catálogo mock existente; la consulta actualizada de inventario contra un backend queda sujeta al contrato público pendiente.
+- **Verificación:** `npm run lint`, `npm run build` y `node --test src/core/context/cartState.test.js`. Flujo probado en navegador a 360, 768 y 1440 px: selección requerida, límites de cantidad, apertura/cierre, persistencia, eliminación, carrito vacío, producto agotado, 404 y navegación a `/checkout`.
