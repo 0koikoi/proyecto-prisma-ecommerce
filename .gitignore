@@ -62,3 +62,4 @@ GEMINI.md
 .pr/
 frontend/coverage/
 coverage/
+.diagram-design

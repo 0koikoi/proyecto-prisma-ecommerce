@@ -67,13 +67,7 @@ Se definen en `frontend/.env` (copia de `.env.example`). Ese archivo **no se sub
 
 Todos los datos pasan por los servicios (`catalogService.js` y `orderService.js`). **Ningún componente llama a `fetch` ni importa un JSON directamente.** Eso permite cambiar de fuente de datos sin tocar la interfaz.
 
-```mermaid
-flowchart LR
-    P[Pagina o componente] --> S[Servicio]
-    S --> C{VITE_USE_MOCK}
-    C -- true --> M[Datos simulados en memoria]
-    C -- false --> A[apiClient hacia la API real]
-```
+![Las páginas piden datos al servicio, que según VITE_USE_MOCK responde con datos simulados o con la API real a través de apiClient](images/fuente-datos.svg)
 
 Para conectar el backend real:
 
