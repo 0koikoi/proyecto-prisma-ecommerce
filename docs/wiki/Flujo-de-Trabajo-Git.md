@@ -8,26 +8,7 @@ Cómo pasa un cambio desde tu computadora hasta producción, y las reglas que ev
 
 ## El modelo de ramas
 
-```mermaid
-gitGraph
-    commit id: "main estable"
-    branch develop
-    checkout develop
-    commit id: "integracion"
-    branch "feat/checkout-form"
-    checkout "feat/checkout-form"
-    commit id: "formulario"
-    commit id: "resumen"
-    checkout develop
-    merge "feat/checkout-form" id: "PR 17"
-    branch "feat/order-tracking"
-    checkout "feat/order-tracking"
-    commit id: "timeline"
-    checkout develop
-    merge "feat/order-tracking" id: "PR 21"
-    checkout main
-    merge develop id: "release"
-```
+![Una rama de tarea entra a develop con un PR, develop llega a main con otro PR, y develop y main publican staging y producción](images/flujo-ramas.svg)
 
 | Rama | Para qué sirve | ¿Se trabaja directo? |
 | :--- | :--- | :--- |

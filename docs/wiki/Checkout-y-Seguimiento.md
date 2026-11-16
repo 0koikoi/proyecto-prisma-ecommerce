@@ -104,17 +104,7 @@ Archivo: `feature/tracking/OrderTrackingPage.jsx`. Línea de tiempo: `feature/tr
 
 ### Estados del pedido
 
-```mermaid
-stateDiagram-v2
-    [*] --> PENDING
-    PENDING --> PREPARING
-    PREPARING --> SHIPPED
-    SHIPPED --> DELIVERED
-    PENDING --> CANCELLED
-    PREPARING --> CANCELLED
-    DELIVERED --> [*]
-    CANCELLED --> [*]
-```
+![Estados de un pedido: pendiente, en preparación, enviado y entregado, con cancelado como estado aparte](images/estados-pedido.svg)
 
 | Estado | Etiqueta | Color del badge | Significado |
 | :--- | :--- | :--- | :--- |

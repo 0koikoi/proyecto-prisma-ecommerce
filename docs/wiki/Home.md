@@ -29,16 +29,7 @@ Tienda Prisma es la tienda en línea de tres líneas de negocio: **Moda Femenina
 
 ## El recorrido del cliente
 
-```mermaid
-flowchart LR
-    A[Portada] --> B[Catalogo]
-    B --> C[Detalle de producto]
-    C --> D[Carrito]
-    D --> E[Checkout]
-    E --> F[Confirmacion<br/>codigo WEB-2026-XXXXX]
-    F --> G[Seguimiento<br/>timeline de estados]
-    A -. busqueda global .-> C
-```
+![Recorrido del cliente: portada, catálogo, detalle, carrito, checkout, confirmación y seguimiento, con la búsqueda global que lleva al detalle](images/recorrido-cliente.svg)
 
 ## Estado del proyecto
 
