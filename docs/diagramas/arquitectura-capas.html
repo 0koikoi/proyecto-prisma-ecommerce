@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capas del frontend</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --color-paper: #f5f5f5; --color-ink: #1c1c1c; --color-muted: #4b5563; --color-accent: #0e7490;
+  --font-sans: 'Geist', system-ui, sans-serif; --font-serif: 'Instrument Serif', 'Noto Serif', serif; --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+.frame { max-width: 1200px; width: 100%; }
+.diagram-container { width: 100%; overflow-x: auto; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+svg { width: 100%; min-width: 960px; display: block; }
+@media print { .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="frame">
+<p class="eyebrow">Capas · Tienda Prisma</p>
+<h1>Capas del frontend</h1>
+<div class="diagram-container">
+<svg viewBox="0 0 960 508" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="arquitectura-capas-title arquitectura-capas-desc">
+<title id="arquitectura-capas-title">Capas del frontend</title>
+<desc id="arquitectura-capas-desc">Cinco capas apiladas, de las páginas al origen de datos; los servicios son el único punto de acceso a los datos.</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4b5563"/></marker>
+<marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0e7490"/></marker>
+<marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1d4ed8"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#f5f5f5"/>
+<line x1="60" y1="64" x2="60" y2="416" stroke="#4b5563" stroke-width="1.2" marker-end="url(#arrow)"/>
+<text x="60" y="52" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">USUARIO</text>
+<text x="60" y="436" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">DATOS</text>
+<rect x="100" y="64" width="800" height="72" fill="#ffffff" stroke="rgba(28,28,28,0.18)" stroke-width="1"/>
+<text x="120" y="92" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">L1</text>
+<text x="120" y="116" fill="#1c1c1c" font-size="14" font-weight="600" font-family="'Geist', system-ui, sans-serif">Páginas</text>
+<text x="880" y="96" fill="#1c1c1c" font-size="10" font-family="'Geist', system-ui, sans-serif" text-anchor="end">pantallas y sus estados: cargando, error, vacío</text>
+<text x="880" y="116" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">feature/*</text>
+<rect x="100" y="136" width="800" height="72" fill="#ffffff" stroke="rgba(28,28,28,0.18)" stroke-width="1"/>
+<text x="120" y="164" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">L2</text>
+<text x="120" y="188" fill="#1c1c1c" font-size="14" font-weight="600" font-family="'Geist', system-ui, sans-serif">Componentes y contextos</text>
+<text x="880" y="168" fill="#1c1c1c" font-size="10" font-family="'Geist', system-ui, sans-serif" text-anchor="end">piezas visuales y estado compartido</text>
+<text x="880" y="188" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">shared/components · core/context</text>
+<rect x="100" y="208" width="800" height="72" fill="#d6efff" stroke="#0e7490" stroke-width="1.2"/>
+<text x="120" y="236" fill="#0e7490" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">L3</text>
+<text x="120" y="260" fill="#1c1c1c" font-size="14" font-weight="600" font-family="'Geist', system-ui, sans-serif">Servicios</text>
+<text x="880" y="240" fill="#1c1c1c" font-size="10" font-family="'Geist', system-ui, sans-serif" text-anchor="end">único punto de acceso a datos y reglas de pedido</text>
+<text x="880" y="260" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">catalogService · orderService</text>
+<rect x="100" y="280" width="800" height="72" fill="#ffffff" stroke="rgba(28,28,28,0.18)" stroke-width="1"/>
+<text x="120" y="308" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">L4</text>
+<text x="120" y="332" fill="#1c1c1c" font-size="14" font-weight="600" font-family="'Geist', system-ui, sans-serif">Cliente HTTP</text>
+<text x="880" y="312" fill="#1c1c1c" font-size="10" font-family="'Geist', system-ui, sans-serif" text-anchor="end">fetch con errores uniformes e interruptor de modo</text>
+<text x="880" y="332" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">apiClient · VITE_USE_MOCK</text>
+<rect x="100" y="352" width="800" height="72" fill="#ffffff" stroke="rgba(28,28,28,0.18)" stroke-width="1"/>
+<text x="120" y="380" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">L5</text>
+<text x="120" y="404" fill="#1c1c1c" font-size="14" font-weight="600" font-family="'Geist', system-ui, sans-serif">Origen de datos</text>
+<text x="880" y="384" fill="#1c1c1c" font-size="10" font-family="'Geist', system-ui, sans-serif" text-anchor="end">datos simulados o API real</text>
+<text x="880" y="404" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">mock · /api/public/...</text>
+<line x1="40" y1="460" x2="920" y2="460" stroke="rgba(28,28,28,0.10)" stroke-width="0.8"/>
+<text x="40" y="476" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">LEYENDA</text>
+<rect x="120" y="469" width="16" height="10" rx="2" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+<text x="144" y="478" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Capa</text>
+<rect x="194" y="469" width="16" height="10" rx="2" fill="#d6efff" stroke="#0e7490" stroke-width="1"/>
+<text x="218" y="478" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Capa clave: nada llega a los datos sin pasar por aquí</text>
+</svg>
+</div>
+</div>
+</body>
+</html>

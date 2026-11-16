@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 436" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="flujo-ramas-title flujo-ramas-desc" id="flujo-ramas-root">
+<title id="flujo-ramas-title">Flujo de ramas</title>
+<desc id="flujo-ramas-desc">El trabajo sale de una rama de tarea, entra a develop con un pull request y solo develop llega a main; develop publica staging y main publica producción.</desc>
+<defs>
+      <style>#flujo-ramas-root { --color-paper: #f5f5f5; --color-ink: #1c1c1c; --color-muted: #4b5563; --color-accent: #0e7490;
+  --font-sans: 'Geist', system-ui, sans-serif; --font-serif: 'Instrument Serif', 'Noto Serif', serif; --font-mono: 'Geist Mono', ui-monospace, monospace; }
+      #flujo-ramas-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #flujo-ramas-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#flujo-ramas-root .diagram-container { overflow-x: visible; }
+}</style>
+<marker id="flujo-ramas-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4b5563"/></marker>
+<marker id="flujo-ramas-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0e7490"/></marker>
+<marker id="flujo-ramas-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1d4ed8"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#f5f5f5"/>
+<path d="M260,84.0 H400" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#flujo-ramas-arrow)"/>
+<rect x="304.0" y="64.0" width="52" height="12" rx="2" fill="#f5f5f5"/><text x="330.0" y="73.0" fill="#5b6472" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PR + CI</text>
+<path d="M560,84.0 H700" fill="none" stroke="#0e7490" stroke-width="1.2" marker-end="url(#flujo-ramas-arrow-accent)"/>
+<rect x="604.0" y="64.0" width="52" height="12" rx="2" fill="#f5f5f5"/><text x="630.0" y="73.0" fill="#5b6472" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PR + CI</text>
+<path d="M480.0,120 V228" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#flujo-ramas-arrow)"/>
+<rect x="488.0" y="168.0" width="68" height="12" rx="2" fill="#f5f5f5"/><text x="522.0" y="177.0" fill="#5b6472" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">AUTOMÁTICO</text>
+<path d="M780.0,120 V228" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#flujo-ramas-arrow)"/>
+<rect x="788.0" y="168.0" width="68" height="12" rx="2" fill="#f5f5f5"/><text x="822.0" y="177.0" fill="#5b6472" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">APROBACIÓN</text>
+<rect x="100" y="48" width="160" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="100" y="48" width="160" height="72" rx="6" fill="#4b5563" stroke="#5b6472" stroke-width="1" fill-opacity="0.10"/>
+<text x="180.0" y="82.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Rama de tarea</text>
+<text x="180.0" y="98.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">feat/… · fix/… · ci/…</text>
+<rect x="400" y="48" width="160" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="400" y="48" width="160" height="72" rx="6" fill="#d6efff" stroke="#0e7490" stroke-width="1"/>
+<text x="480.0" y="82.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">develop</text>
+<text x="480.0" y="98.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">integración</text>
+<rect x="700" y="48" width="160" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="700" y="48" width="160" height="72" rx="6" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+<text x="780.0" y="82.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">main</text>
+<text x="780.0" y="98.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">producción</text>
+<rect x="400" y="228" width="160" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="400" y="228" width="160" height="72" rx="6" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+<text x="480.0" y="262.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Staging</text>
+<text x="480.0" y="278.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Vercel · vista previa</text>
+<rect x="700" y="228" width="160" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="700" y="228" width="160" height="72" rx="6" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+<text x="780.0" y="262.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Producción</text>
+<text x="780.0" y="278.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Vercel · manual</text>
+<text x="480" y="352" fill="#1c1c1c" font-size="16" font-style="italic" font-family="'Instrument Serif', 'Noto Serif', serif" text-anchor="middle">Nunca se hace push directo a main ni a develop.</text>
+<line x1="40" y1="388" x2="920" y2="388" stroke="#1c1c1c" stroke-width="0.8" stroke-opacity="0.10"/>
+<text x="40" y="404" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">LEYENDA</text>
+<rect x="120" y="397" width="16" height="10" rx="2" fill="#4b5563" stroke="#5b6472" stroke-width="1" fill-opacity="0.10"/>
+<text x="144" y="406" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Rama de trabajo</text>
+<rect x="256" y="397" width="16" height="10" rx="2" fill="#d6efff" stroke="#0e7490" stroke-width="1"/>
+<text x="280" y="406" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Integración</text>
+<rect x="369" y="397" width="16" height="10" rx="2" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+<text x="393" y="406" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Producción</text>
+<rect x="477" y="397" width="16" height="10" rx="2" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+<text x="501" y="406" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Despliegue</text>
+</svg>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 496" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pipeline-ci-title pipeline-ci-desc" id="pipeline-ci-root">
+<title id="pipeline-ci-title">Pipeline de CI/CD</title>
+<desc id="pipeline-ci-desc">Al abrir un pull request corren tres grupos de verificaciones en paralelo; si el check CI aprobado pasa, el PR se revisa y se despliega, y si falla el bot comenta qué revisar.</desc>
+<defs>
+      <style>#pipeline-ci-root { --color-paper: #f5f5f5; --color-ink: #1c1c1c; --color-muted: #4b5563; --color-accent: #0e7490;
+  --font-sans: 'Geist', system-ui, sans-serif; --font-serif: 'Instrument Serif', 'Noto Serif', serif; --font-mono: 'Geist Mono', ui-monospace, monospace; }
+      #pipeline-ci-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #pipeline-ci-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#pipeline-ci-root .diagram-container { overflow-x: visible; }
+}</style>
+<marker id="pipeline-ci-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4b5563"/></marker>
+<marker id="pipeline-ci-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0e7490"/></marker>
+<marker id="pipeline-ci-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1d4ed8"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#f5f5f5"/>
+<path d="M160,94 H260" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#pipeline-ci-arrow)"/>
+<path d="M160,216 H260" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#pipeline-ci-arrow)"/>
+<path d="M160,338 H260" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#pipeline-ci-arrow)"/>
+<path d="M460,94 H512.0 a8,8 0 0 1 8,8 V190 a8,8 0 0 0 8,8 H580" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#pipeline-ci-arrow)"/>
+<path d="M460,216 H580" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#pipeline-ci-arrow)"/>
+<path d="M460,338 H512.0 a8,8 0 0 0 8,-8 V242 a8,8 0 0 1 8,-8 H580" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#pipeline-ci-arrow)"/>
+<path d="M720,216 H780" fill="none" stroke="#0e7490" stroke-width="1.2" marker-end="url(#pipeline-ci-arrow-accent)"/>
+<rect x="732.0" y="196" width="36" height="12" rx="2" fill="#f5f5f5"/><text x="750" y="205" fill="#5b6472" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PASA</text>
+<path d="M650,252 V340" fill="none" stroke="#4b5563" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#pipeline-ci-arrow)"/>
+<rect x="658" y="290" width="40" height="12" rx="2" fill="#f5f5f5"/><text x="678.0" y="299" fill="#5b6472" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">FALLA</text>
+<path d="M850,252 V340" fill="none" stroke="#4b5563" stroke-width="1.2" marker-end="url(#pipeline-ci-arrow)"/>
+<rect x="858" y="290" width="40" height="12" rx="2" fill="#f5f5f5"/><text x="878.0" y="299" fill="#5b6472" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">MERGE</text>
+<rect x="40" y="40" width="120" height="320" rx="6" fill="#f5f5f5"/>
+<rect x="40" y="40" width="120" height="320" rx="6" fill="#4b5563" stroke="#5b6472" stroke-width="1" fill-opacity="0.10"/>
+<text x="100.0" y="198.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">PR abierto</text>
+<text x="100.0" y="214.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">hacia develop</text>
+<rect x="260" y="58" width="200" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="260" y="58" width="200" height="72" rx="6" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+<text x="360.0" y="92.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Política y PR</text>
+<text x="360.0" y="108.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">ramas · título · Closes</text>
+<rect x="260" y="180" width="200" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="260" y="180" width="200" height="72" rx="6" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+<text x="360.0" y="214.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Lint y pruebas</text>
+<text x="360.0" y="230.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Node 20/22 · cobertura</text>
+<rect x="260" y="302" width="200" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="260" y="302" width="200" height="72" rx="6" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+<text x="360.0" y="336.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Build y seguridad</text>
+<text x="360.0" y="352.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">bundle · audit · secretos</text>
+<rect x="580" y="180" width="140" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="580" y="180" width="140" height="72" rx="6" fill="#d6efff" stroke="#0e7490" stroke-width="1"/>
+<text x="650.0" y="214.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">CI aprobado</text>
+<text x="650.0" y="230.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">check requerido</text>
+<rect x="780" y="180" width="140" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="780" y="180" width="140" height="72" rx="6" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+<text x="850.0" y="214.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Revisión y merge</text>
+<text x="850.0" y="230.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">1 aprobación</text>
+<rect x="580" y="340" width="140" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="580" y="340" width="140" height="72" rx="6" fill="#1c1c1c" stroke="#4b5563" stroke-width="1" fill-opacity="0.05"/>
+<text x="650.0" y="374.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Comentario del bot</text>
+<text x="650.0" y="390.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">qué falló y cómo</text>
+<rect x="780" y="340" width="140" height="72" rx="6" fill="#f5f5f5"/>
+<rect x="780" y="340" width="140" height="72" rx="6" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+<text x="850.0" y="374.0" fill="#1c1c1c" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Deploy Vercel</text>
+<text x="850.0" y="390.0" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">develop o main</text>
+<line x1="40" y1="440" x2="920" y2="440" stroke="#1c1c1c" stroke-width="0.8" stroke-opacity="0.10"/>
+<text x="40" y="456" fill="#4b5563" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">LEYENDA</text>
+<rect x="120" y="449" width="16" height="10" rx="2" fill="#4b5563" stroke="#5b6472" stroke-width="1" fill-opacity="0.10"/>
+<text x="144" y="458" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Entrada</text>
+<rect x="211" y="449" width="16" height="10" rx="2" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+<text x="235" y="458" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Verificación</text>
+<rect x="330" y="449" width="16" height="10" rx="2" fill="#d6efff" stroke="#0e7490" stroke-width="1"/>
+<text x="354" y="458" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Check requerido</text>
+<line x1="466" y1="454" x2="482" y2="454" stroke="#4b5563" stroke-width="1.2" stroke-dasharray="5,4"/>
+<text x="490" y="458" fill="#4b5563" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Camino de falla</text>
+</svg>
