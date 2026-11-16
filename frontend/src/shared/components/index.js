@@ -8,3 +8,7 @@ export { MobileMenu } from './MobileMenu';
 export { Footer } from './Footer';
 export { MainLayout } from './MainLayout';
 export { ProductCard } from './ProductCard';
+export { SizeSelector } from './SizeSelector';
+export { QuantitySelector } from './QuantitySelector';
+export { ProductImage } from './ProductImage';
+export { SearchPalette } from './SearchPalette';

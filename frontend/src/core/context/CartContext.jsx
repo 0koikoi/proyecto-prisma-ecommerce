@@ -1,18 +1,20 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { findVariantInCatalog } from '../../feature/catalog/services/catalogService';
+import { changeCart, reconcileCart } from './cartState';
+import { findVariantInCatalog, getDemoCartItems } from '../../feature/catalog/services/catalogService';
+import { USE_MOCK } from '../api/apiClient';
 
-const STORAGE_KEY = 'prisma_store_cart_v1';
+const STORAGE_KEY = USE_MOCK ? 'prisma_store_demo_cart_v1' : 'prisma_store_cart_v1';
 
 const CartContext = createContext(null);
 
 function loadInitialCart() {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
+    if (!raw) return getDemoCartItems();
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed : getDemoCartItems();
   } catch {
-    return [];
+    return getDemoCartItems();
   }
 }
 
@@ -25,44 +27,20 @@ function saveCartToStorage(items) {
 }
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState(loadInitialCart);
+  const [items, setItems] = useState(() => reconcileCart(loadInitialCart(), findVariantInCatalog));
+  const [isOpen, setIsOpen] = useState(false);
+  const openCart = useCallback(() => {
+    setItems((items) => reconcileCart(items, findVariantInCatalog));
+    setIsOpen(true);
+  }, []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
 
   useEffect(() => {
     saveCartToStorage(items);
   }, [items]);
 
-  const addItem = useCallback((variantId, quantity = 1) => {
-    const numericId = Number(variantId);
-    const addedQty = Math.max(1, Number(quantity) || 1);
-    if (!numericId) return;
-
-    setItems((prevItems) => {
-      const existingIndex = prevItems.findIndex((item) => item.variantId === numericId);
-      const catalogInfo = findVariantInCatalog(numericId);
-
-      if (existingIndex >= 0) {
-        const current = prevItems[existingIndex];
-        const maxStock = catalogInfo?.availableStock ?? current.availableStock ?? 99;
-        const nextQuantity = Math.min(current.quantity + addedQty, Math.max(1, maxStock));
-
-        return prevItems.map((item, idx) =>
-          idx === existingIndex ? { ...item, quantity: nextQuantity } : item,
-        );
-      }
-
-      const newItem = {
-        variantId: numericId,
-        quantity: addedQty,
-        name: catalogInfo?.name || `Variante #${numericId}`,
-        slug: catalogInfo?.slug || '',
-        size: catalogInfo?.size || '-',
-        color: catalogInfo?.color || '-',
-        salePrice: catalogInfo?.salePrice ?? 0,
-        availableStock: catalogInfo?.availableStock ?? 99,
-      };
-
-      return [...prevItems, newItem];
-    });
+  const addItem = useCallback((id, quantity = 1) => {
+    setItems((items) => changeCart(items, id, quantity, findVariantInCatalog, 'add'));
   }, []);
 
   const removeItem = useCallback((variantId) => {
@@ -70,26 +48,8 @@ export function CartProvider({ children }) {
     setItems((prevItems) => prevItems.filter((item) => item.variantId !== numericId));
   }, []);
 
-  const updateQuantity = useCallback((variantId, quantity) => {
-    const numericId = Number(variantId);
-    const nextQty = Number(quantity);
-
-    if (Number.isNaN(nextQty) || nextQty <= 0) {
-      setItems((prevItems) => prevItems.filter((item) => item.variantId !== numericId));
-      return;
-    }
-
-    setItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item.variantId !== numericId) return item;
-        const catalogInfo = findVariantInCatalog(numericId);
-        const maxStock = catalogInfo?.availableStock ?? item.availableStock ?? 99;
-        return {
-          ...item,
-          quantity: Math.min(nextQty, Math.max(1, maxStock)),
-        };
-      }),
-    );
+  const updateQuantity = useCallback((id, quantity) => {
+    setItems((items) => changeCart(items, id, quantity, findVariantInCatalog));
   }, []);
 
   const clear = useCallback(() => {
@@ -108,7 +68,7 @@ export function CartProvider({ children }) {
           .reduce((sum, item) => {
             const catalogInfo = findVariantInCatalog(item.variantId);
             const unitPrice = catalogInfo?.salePrice ?? (Number(item.salePrice) || 0);
-            return sum + unitPrice * (Number(item.quantity) || 0);
+            return sum + (item.unavailable ? 0 : unitPrice) * (Number(item.quantity) || 0);
           }, 0)
           .toFixed(2),
       ),
@@ -118,6 +78,8 @@ export function CartProvider({ children }) {
   const value = useMemo(
     () => ({
       items,
+      isOpen, openCart, closeCart,
+      canCheckout: items.length > 0 && items.every((item) => !item.unavailable),
       addItem,
       removeItem,
       updateQuantity,
@@ -125,7 +87,7 @@ export function CartProvider({ children }) {
       totalItems,
       subtotal,
     }),
-    [items, addItem, removeItem, updateQuantity, clear, totalItems, subtotal],
+    [items, addItem, removeItem, updateQuantity, clear, totalItems, subtotal, isOpen, openCart, closeCart],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

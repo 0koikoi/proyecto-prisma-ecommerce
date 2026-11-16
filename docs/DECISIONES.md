@@ -21,3 +21,4 @@ Este documento registra las decisiones adoptadas al construir el template base d
 ## 5. Nombre del archivo de guía de estilo
 - **Contexto:** El repositorio tenía inicialmente `docs/Estilo del ecommerce.md`, mientras que las instrucciones referencian `docs/ESTILO_ECOMMERCE.md`.
 - **Decisión:** Se conservaron ambos nombres en `docs/` con el mismo contenido para evitar enlaces rotos en herramientas o referencias del equipo.
+
