@@ -10,7 +10,6 @@
 | --- | --- |
 | `.github/workflows/ci.yml` | Pipeline principal (verificaciones, despliegues y release) |
 | `.github/workflows/vercel-deploy.yml` | Despliegue reutilizable a Vercel con prueba de humo |
-| `.github/workflows/reporte-fallos.yml` | Comenta en el PR qué falló (o confirma que todo pasó) |
 | `.github/workflows/codeql.yml` | Análisis estático con CodeQL (PRs, pushes y semanal) |
 | `.github/actions/setup-frontend` | Acción compuesta: Node + `npm ci` con caché |
 | `.github/dependabot.yml` | Actualizaciones semanales de npm y Actions hacia `develop` |
@@ -31,6 +30,7 @@
 | Escaneo de secretos | siempre | Patrones de credenciales y archivos `.env` versionados |
 | Lint de workflows | siempre | `actionlint` sobre los workflows |
 | **CI aprobado** | siempre | Agrupa los jobs requeridos: es el único check obligatorio |
+| Reporte en el PR | PRs del mismo repo | Comenta qué falló, en qué paso y cómo corregirlo (o avisa que todo pasó) |
 | Vista previa del PR | PRs del mismo repo | Vista previa en Vercel y comentario con la URL |
 | Desplegar staging | push a `develop` | Vista previa en Vercel + prueba de humo |
 | Desplegar producción | push a `main` | Producción en Vercel + prueba de humo, con aprobación del entorno `production` |
@@ -38,13 +38,13 @@
 
 ## Reporte de fallos en el PR
 
-Cuando `CI/CD` termina en un PR, `reporte-fallos.yml` publica (y actualiza) un único comentario con:
+Al terminar el CI de un PR, el job `Reporte en el PR` publica (y luego actualiza) un único comentario con:
 
 - los jobs que fallaron, el paso exacto y el enlace a sus logs;
 - una pista para corregirlo (por ejemplo, el comando local que conviene correr);
 - un aviso corto cuando todo queda en verde.
 
-Corre con `workflow_run`: no ejecuta código del PR, así que también puede comentar en PRs de forks.
+Corre dentro del propio workflow, así que funciona desde cualquier rama sin depender de la rama por defecto. En PRs desde forks no comenta, porque ese token es de solo lectura.
 
 ## Configuración
 
