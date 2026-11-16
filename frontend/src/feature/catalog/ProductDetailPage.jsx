@@ -1,222 +1,115 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Package } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import Skeleton from 'react-loading-skeleton';
+import { MessageCircle, ShoppingBag } from 'lucide-react';
 import { EmptyState } from '../../shared/components';
-import { ProductCard } from '../../shared/components/ProductCard';
-import { Badge } from '../../shared/components/Badge';
+import { SizeSelector } from '../../shared/components/SizeSelector';
+import { QuantitySelector } from '../../shared/components/QuantitySelector';
+import { ProductImage } from '../../shared/components/ProductImage';
+import { useCart } from '../../core/context/CartContext';
+import { STORE_CONTACT } from '../../shared/constants/storeLines';
 import { formatCurrency } from '../../shared/utils/formatters';
-import { getProductImages, getProductPrice } from '../../shared/utils/productUtils';
 import { catalogService } from './services/catalogService';
 
 export function ProductDetailPage() {
   const { slug } = useParams();
-  const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]);
-  const [relatedError, setRelatedError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [reloadKey, setReloadKey] = useState(0);
+  return <ProductDetail key={slug} slug={slug} />;
+}
 
+function ProductDetail({ slug }) {
+  const [state, setState] = useState({ loading: true, product: null, error: null });
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    let isCurrentRequest = true;
-    setIsLoading(true);
-    setError(null);
-    setRelatedError(null);
-    setRelatedProducts([]);
-    setSelectedImage(0);
+    let active = true;
+    setState({ loading: true, product: null, error: null });
+    catalogService.getProductBySlug(slug).then(
+      (product) => { if (active) setState({ loading: false, product, error: null }); },
+      (error) => { if (active) setState({ loading: false, product: null, error }); },
+    );
+    return () => { active = false; };
+  }, [slug, attempt]);
 
-    async function loadProduct() {
-      try {
-        const loadedProduct = await catalogService.getProductBySlug(slug);
-        if (!isCurrentRequest) return;
-        setProduct(loadedProduct);
-        setIsLoading(false);
+  if (state.loading) return (
+    <section className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-8" aria-busy="true" aria-label="Cargando producto">
+      <div className="lg:col-span-7"><Skeleton className="aspect-[3/4]" /></div>
+      <div className="lg:col-span-5 space-y-6"><Skeleton height={40} count={2} /><Skeleton height={24} count={5} /></div>
+    </section>
+  );
+  if (state.error) return <EmptyState title={state.error.status === 404 ? 'Producto no encontrado' : 'No pudimos cargar la información.'}
+    description={state.error.status === 404 ? 'Este producto no está disponible en nuestro catálogo.' : 'Revisa tu conexión e inténtalo otra vez.'}
+    actionLabel="Reintentar" onAction={() => setAttempt((value) => value + 1)} />;
+  if (!state.product) return <EmptyState title="Producto no encontrado" description="Explora nuestras colecciones para encontrar otros productos." />;
+  return <ProductPurchase product={state.product} />;
+}
 
-        try {
-          const products = await catalogService.getProducts({ line: loadedProduct.line });
-          if (!isCurrentRequest) return;
-          const sameCategory = products.filter(
-            (item) => item.slug !== loadedProduct.slug && item.category === loadedProduct.category,
-          );
-          const related = [
-            ...sameCategory,
-            ...products.filter(
-              (item) =>
-                item.slug !== loadedProduct.slug &&
-                item.line === loadedProduct.line &&
-                !sameCategory.some((categoryItem) => categoryItem.slug === item.slug),
-            ),
-          ];
-          setRelatedProducts(related.slice(0, 4));
-        } catch (relatedRequestError) {
-          if (isCurrentRequest) setRelatedError(relatedRequestError);
-        }
-      } catch (requestError) {
-        if (isCurrentRequest) setError(requestError);
-      } finally {
-        if (isCurrentRequest) setIsLoading(false);
-      }
+function ProductPurchase({ product }) {
+  const { items, addItem, openCart } = useCart();
+  const [variantId, setVariantId] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [error, setError] = useState('');
+  const selectionRef = useRef(null);
+  const variants = product.variants || [];
+  const selected = variants.find((variant) => variant.id === variantId);
+  const soldOut = !variants.some((variant) => variant.availableStock > 0);
+  const inCart = items.find((item) => item.variantId === variantId)?.quantity || 0;
+  const remaining = Math.max(0, (selected?.availableStock || 0) - inCart);
+  const effectiveQuantity = Math.min(quantity, Math.max(1, remaining));
+  const price = selected?.salePrice ?? (variants.length ? Math.min(...variants.map((variant) => variant.salePrice)) : 0);
+  const message = `Hola, quiero consultar por ${product.name}${selected ? `, talla ${selected.size}, color ${selected.color}` : ''}. ${window.location.href}`;
+  const whatsappUrl = `${STORE_CONTACT.whatsappUrl}?text=${encodeURIComponent(message)}`;
+
+  function handleAdd() {
+    if (!selected) {
+      setError('Elige una talla y color antes de agregar al carrito.');
+      selectionRef.current?.querySelector('button:not(:disabled)')?.focus();
+      selectionRef.current?.scrollIntoView({ block: 'center' });
+      return;
     }
-
-    loadProduct();
-
-    return () => {
-      isCurrentRequest = false;
-    };
-  }, [reloadKey, slug]);
-
-  if (isLoading) {
-    return (
-      <section className="mx-auto max-w-6xl space-y-6" aria-busy="true">
-        <div className="h-5 w-32 animate-pulse rounded bg-gray-200" />
-        <div className="grid gap-8 lg:grid-cols-12">
-          <div className="aspect-[3/4] animate-pulse rounded-2xl bg-gray-200 lg:col-span-7" />
-          <div className="space-y-4 lg:col-span-5">
-            <div className="h-5 w-24 animate-pulse rounded bg-gray-200" />
-            <div className="h-9 animate-pulse rounded bg-gray-200" />
-            <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
-          </div>
-        </div>
-      </section>
-    );
+    if (remaining <= 0) return;
+    addItem(selected.id, effectiveQuantity);
+    setError('');
+    setQuantity(1);
+    openCart();
   }
 
-  if (error || !product) {
-    const isNotFound = error?.status === 404;
-    return (
-      <section className="mx-auto max-w-6xl space-y-6">
-        <EmptyState
-          title={isNotFound ? 'No encontramos este producto' : 'No pudimos cargar el producto'}
-          description={
-            isNotFound
-              ? 'Es posible que el producto ya no esté disponible.'
-              : error?.message || 'Revisa tu conexión e inténtalo nuevamente.'
-          }
-          actionLabel={isNotFound ? 'Volver al catálogo' : 'Reintentar'}
-          onAction={() =>
-            isNotFound ? navigate('/catalogo') : setReloadKey((key) => key + 1)
-          }
-        />
-      </section>
-    );
-  }
-
-  const images = getProductImages(product);
-  const displayImages = images.length ? images : [null];
-  const prices = (product.variants || [])
-    .map((variant) => Number(variant.salePrice))
-    .filter(Number.isFinite);
-  const hasVariablePrice = new Set(prices).size > 1;
-  const catalogPath = product.line ? `/catalogo/${product.line.toLowerCase()}` : '/catalogo';
-
+  const buttonText = soldOut ? 'Agotado' : selected && remaining === 0 ? 'Máximo en el carrito' : 'Agregar al carrito';
+  const disabled = soldOut || Boolean(selected && remaining === 0);
   return (
-    <section className="mx-auto max-w-6xl space-y-10">
-      <Link
-        to={catalogPath}
-        className="inline-flex min-h-11 items-center gap-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-primary focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-secondary"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        Volver a {product.line || 'catálogo'}
-      </Link>
-
-      <div className="grid items-start gap-8 lg:grid-cols-12">
-        <div className="space-y-4 lg:col-span-7">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100">
-            {displayImages[selectedImage] ? (
-              <img
-                src={displayImages[selectedImage]}
-                alt={`${product.name} - imagen ${selectedImage + 1}`}
-                className="h-full w-full object-cover"
-                fetchPriority="high"
-              />
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-3 text-gray-400">
-                <Package className="h-16 w-16" aria-hidden="true" />
-                <span className="text-sm font-medium">Imagen no disponible</span>
-              </div>
-            )}
-          </div>
-
-          <div
-            className="flex gap-3 overflow-x-auto pb-2"
-            aria-label="Miniaturas del producto"
-          >
-            {displayImages.map((image, index) => (
-              <button
-                key={`${image || 'placeholder'}-${index}`}
-                type="button"
-                onClick={() => setSelectedImage(index)}
-                aria-label={`Ver imagen ${index + 1} de ${product.name}`}
-                aria-pressed={selectedImage === index}
-                className={`relative aspect-[3/4] w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-gray-100 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-secondary sm:w-24 ${
-                  selectedImage === index ? 'border-primary' : 'border-transparent'
-                }`}
-              >
-                {image ? (
-                  <img
-                    src={image}
-                    alt=""
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <Package className="absolute inset-0 m-auto h-7 w-7 text-gray-400" aria-hidden="true" />
-                )}
-              </button>
-            ))}
-          </div>
+    <section className="max-w-6xl mx-auto pb-24 lg:pb-0 space-y-6">
+      <Link to="/catalogo" className="btn btn-ghost min-h-11 px-3 text-sm">Volver al catálogo</Link>
+      <div className="grid lg:grid-cols-12 gap-6 lg:gap-10">
+        <div className="lg:col-span-7">
+          <ProductImage src={product.images?.[0]} alt={product.name} loading="eager" className="aspect-[3/4] rounded-3xl" />
         </div>
-
-        <div className="space-y-5 lg:col-span-5">
-          <Badge variant="neutral">{product.category}</Badge>
+        <div className="lg:col-span-5 space-y-6">
           <div className="space-y-3">
-            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{product.name}</h1>
-            <p className="text-2xl font-bold">
-              {hasVariablePrice && (
-                <>
-                  <span className="mr-1 text-sm font-medium text-gray-500">Desde</span>{' '}
-                </>
-              )}
-              {formatCurrency(getProductPrice(product))}
-            </p>
+            <span className="badge badge-neutral">{product.category}</span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">{product.name}</h1>
+            <p className="text-2xl font-bold" aria-live="polite">{!selected && new Set(variants.map((variant) => variant.salePrice)).size > 1 && <span className="text-sm font-normal">Desde </span>}{formatCurrency(price)}</p>
           </div>
-          {product.description && (
-            <p className="border-t border-gray-200 pt-5 text-sm leading-7 text-gray-600">
-              {product.description}
-            </p>
-          )}
-          <div className="border-t border-gray-200 pt-5">
-            <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Línea</p>
-            <p className="mt-1 text-sm font-semibold">{product.line}</p>
+          <div ref={selectionRef}>
+            <SizeSelector variants={variants} value={variantId} error={error} onChange={(id) => { setVariantId(id); setQuantity(1); setError(''); }} />
           </div>
+          <div className="space-y-3">
+            <p className="text-sm font-semibold">Cantidad</p>
+            <QuantitySelector value={effectiveQuantity} max={remaining} disabled={!selected || remaining === 0} onChange={setQuantity} />
+            <div aria-live="polite" className="text-sm text-gray-500">
+              {soldOut ? <p className="text-rose">Este producto está agotado en todas sus tallas. Consúltanos por WhatsApp.</p>
+                : selected ? <><p>{remaining === 0 ? 'Ya tienes todas las unidades disponibles en tu carrito.' : `${remaining} unidades disponibles para agregar.`}</p>{selected.availableStock <= 3 && <span className="badge badge-amber mt-2">Últimas {selected.availableStock} unidades</span>}</>
+                  : <p>Selecciona tu talla para ver la disponibilidad.</p>}
+            </div>
+          </div>
+          <div className="space-y-3">
+            <button type="button" onClick={handleAdd} disabled={disabled} className="btn btn-primary btn-lg w-full"><ShoppingBag size={18} aria-hidden="true" />{buttonText}</button>
+            <a href={whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-success btn-lg w-full min-h-11"><MessageCircle size={18} aria-hidden="true" />Consultar por WhatsApp</a>
+          </div>
+          <div className="border-t border-gray-200 pt-6 space-y-2"><h2 className="text-base font-semibold">Sobre este producto</h2><p className="text-sm text-gray-600 leading-relaxed">{product.description}</p></div>
         </div>
       </div>
-
-      {(relatedProducts.length > 0 || relatedError) && (
-        <section className="space-y-5 border-t border-gray-200 pt-8" aria-labelledby="related-title">
-          <div>
-            <h2 id="related-title" className="text-xl font-bold">
-              Productos relacionados
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Más opciones de {product.category || product.line}.
-            </p>
-          </div>
-          {relatedError ? (
-            <p className="text-sm text-rose" role="status">
-              No pudimos cargar los productos relacionados: {relatedError.message}
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {relatedProducts.map((relatedProduct) => (
-                <ProductCard key={relatedProduct.id || relatedProduct.slug} product={relatedProduct} />
-              ))}
-            </div>
-          )}
-        </section>
-      )}
+      <div className="store-purchase-bar">
+        <div className="shrink-0"><span className="block text-xs text-gray-500">Precio</span><span className="text-lg font-bold">{formatCurrency(price)}</span></div>
+        <button type="button" onClick={handleAdd} disabled={disabled} className="btn btn-primary min-h-11 px-3 py-3 text-xs flex-1">{buttonText}</button>
+      </div>
     </section>
   );
 }
