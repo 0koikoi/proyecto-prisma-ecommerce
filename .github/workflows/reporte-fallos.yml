@@ -1,0 +1,77 @@
+name: Reporte de fallos
+
+# Cuando el workflow "CI/CD" termina en un PR, comenta qué falló (o confirma que todo pasó).
+# Usa workflow_run: no ejecuta código del PR y su token puede comentar también en PRs de forks.
+
+on:
+  workflow_run:
+    workflows: ['CI/CD']
+    types: [completed]
+
+permissions:
+  actions: read
+  pull-requests: write
+
+jobs:
+  comentar:
+    name: Comentar resultado en el PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event.workflow_run.event == 'pull_request'
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const { owner, repo } = context.repo;
+
+            // PR asociado (en forks `pull_requests` viene vacío: se busca por commit).
+            let prNumber = run.pull_requests?.[0]?.number;
+            if (!prNumber) {
+              const { data } = await github.rest.repos.listPullRequestsForCommit({ owner, repo, commit_sha: run.head_sha });
+              prNumber = data.find((pr) => pr.state === 'open')?.number;
+            }
+            if (!prNumber) return core.info('No se encontró un PR abierto para este run.');
+
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+              owner, repo, run_id: run.id, per_page: 100,
+            });
+            const fallidos = jobs.filter((j) => j.conclusion === 'failure');
+
+            const pistas = [
+              ['Política de ramas', 'Los PR hacia main solo pueden venir de develop. Cierra este y ábrelo apuntando a develop.'],
+              ['Higiene del PR', 'El título tiene que seguir Conventional Commits, por ejemplo: feat(checkout): agrega formulario (#9).'],
+              ['Lint de workflows', 'Corre actionlint en la raíz del repo y arregla lo que marque.'],
+              ['Lint', 'Corre npm run lint dentro de frontend y corrige lo que marque.'],
+              ['Pruebas', 'Corre npm run test:ci dentro de frontend. Si todas pasan, revisa que no haya bajado la cobertura.'],
+              ['Compilación', 'Corre npm run build dentro de frontend. Si el error es del presupuesto, hay que bajar el peso del bundle.'],
+              ['Auditoría', 'Corre npm audit --omit=dev dentro de frontend y actualiza la dependencia que aparece como vulnerable.'],
+              ['Escaneo de secretos', 'Saca la credencial o el archivo .env del repo y cambia la clave que quedó expuesta.'],
+              ['Desplegar', 'Revisa que los secretos de Vercel estén bien cargados y que el proyecto tenga el Root Directory vacío.'],
+            ];
+            const pistaPara = (nombre) => pistas.find(([k]) => nombre.includes(k))?.[1];
+
+            const marca = '<!-- reporte-ci -->';
+            const corto = run.head_sha.slice(0, 7);
+            let cuerpo;
+            if (fallidos.length === 0 && run.conclusion === 'success') {
+              cuerpo = `${marca}\nTodo en orden: las verificaciones pasaron en el commit ${corto}. Detalle en el [run completo](${run.html_url}).`;
+            } else if (fallidos.length === 0) {
+              cuerpo = `${marca}\nEl CI terminó con estado "${run.conclusion}" en el commit ${corto}, pero no hay un job fallido que señalar. Conviene mirar el [run completo](${run.html_url}).`;
+            } else {
+              const lineas = fallidos.map((j) => {
+                const pasos = (j.steps || []).filter((p) => p.conclusion === 'failure').map((p) => p.name).join(', ');
+                const pista = pistaPara(j.name);
+                const detalle = pasos ? `falló en "${pasos}"` : 'falló';
+                return `- ${j.name}: ${detalle} ([logs](${j.html_url})).${pista ? ` ${pista}` : ''}`;
+              });
+              cuerpo = `${marca}\nEl CI falló en el commit ${corto}. Esto es lo que hay que revisar:\n\n${lineas.join('\n')}\n\nEl resto del detalle está en el [run completo](${run.html_url}). Cuando subas un commit nuevo actualizo este comentario.`;
+            }
+
+            const comentarios = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number: prNumber });
+            const existente = comentarios.find((c) => c.body && c.body.includes(marca));
+            if (existente) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existente.id, body: cuerpo });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: cuerpo });
+            }

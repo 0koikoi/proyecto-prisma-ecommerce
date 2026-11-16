@@ -33,3 +33,32 @@ lerna-debug.log*
 prompt.md
 docs/prompt.md
 
+# Test reports (CI)
+frontend/reports/
+reports/
+
+# Vercel
+.vercel
+
+# AI tooling / agent workflow (local only)
+odd/
+.atl/
+.codegraph/
+.gentle-ai/
+.engram/
+.claude/
+.opencode/
+.cursor/
+.windsurf/
+.agents/
+.mcp.json
+opencode.json
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+*.skill-registry.cache.json
+
+# PR helper scripts (local only)
+.pr/
+frontend/coverage/
+coverage/
