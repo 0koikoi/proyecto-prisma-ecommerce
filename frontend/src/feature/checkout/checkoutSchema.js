@@ -26,10 +26,10 @@ export const checkoutSchema = z
     shippingAddress: z.string().trim().min(5, 'Ingresa una dirección de entrega válida.'),
     reference: z.string().trim().max(160, 'La referencia es demasiado larga.').optional(),
     deliveryScope: z.enum(['LOCAL', 'NACIONAL'], {
-      errorMap: () => ({ message: 'Selecciona el ámbito de entrega.' }),
+      error: 'Selecciona el ámbito de entrega.',
     }),
     paymentMethod: z.enum(['YAPE', 'PLIN', 'TARJETA', 'EFECTIVO'], {
-      errorMap: () => ({ message: 'Selecciona un método de pago.' }),
+      error: 'Selecciona un método de pago.',
     }),
   })
   .strict();
