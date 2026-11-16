@@ -1,6 +1,15 @@
 import { apiClient, simulateNetworkDelay, USE_MOCK } from '../../../core/api/apiClient';
 import mockCatalog from './mockCatalog.json';
 
+// Carrito inicial de demostración: tallas, precios y cantidades diferentes.
+export function getDemoCartItems() {
+  return USE_MOCK ? [
+    { variantId: 102, quantity: 1 },
+    { variantId: 201, quantity: 2 },
+    { variantId: 302, quantity: 1 },
+  ] : [];
+}
+
 export async function getProducts(filters = {}) {
   if (USE_MOCK) {
     await simulateNetworkDelay();
@@ -117,6 +126,7 @@ export function findVariantInCatalog(variantId) {
         productId: product.id,
         slug: product.slug,
         name: product.name,
+        image: product.images?.[0] || '',
         line: product.line,
         category: product.category,
         size: variant.size,
