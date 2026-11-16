@@ -33,9 +33,25 @@ describe('orderService (mock mode)', () => {
     });
   });
 
-  it('serves demo orders for each tracking state', async () => {
+  it.each([
+    ['WEB-2026-00001', 'PENDING'],
+    ['WEB-2026-00002', 'PREPARING'],
+    ['WEB-2026-00003', 'SHIPPED'],
+    ['WEB-2026-00004', 'DELIVERED'],
+    ['WEB-2026-00005', 'CANCELLED'],
+  ])('serves demo order %s with status %s', async (code, status) => {
+    const order = await orderService.getOrderByCode(code);
+    expect(order.status).toBe(status);
+    expect(order.code).toBe(code);
+  });
+
+  it('includes courier data for shipped orders', async () => {
     const shipped = await orderService.getOrderByCode('WEB-2026-00003');
-    expect(shipped.status).toBe('SHIPPED');
     expect(shipped.courier).toBeTruthy();
+    expect(shipped.trackingNumber).toBeTruthy();
+  });
+
+  it.each(['constructor', '__proto__', 'toString'])('does not resolve inherited name %s', async (name) => {
+    await expect(orderService.getOrderByCode(name)).rejects.toMatchObject({ status: 404 });
   });
 });

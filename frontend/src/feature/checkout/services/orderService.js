@@ -26,25 +26,32 @@ const DEMO_BASE = {
 };
 
 // Demo orders available in mock mode so every tracking state can be explored.
-const DEMO_ORDERS = {
-  'WEB-2026-00001': () => ({ ...DEMO_BASE, code: 'WEB-2026-00001', status: 'PENDING' }),
-  'WEB-2026-00002': () => ({ ...DEMO_BASE, code: 'WEB-2026-00002', status: 'PREPARING' }),
-  'WEB-2026-00003': () => ({
-    ...DEMO_BASE,
-    code: 'WEB-2026-00003',
-    status: 'SHIPPED',
-    courier: 'Olva Courier',
-    trackingNumber: 'OLV-884210',
-  }),
-  'WEB-2026-00004': () => ({
-    ...DEMO_BASE,
-    code: 'WEB-2026-00004',
-    status: 'DELIVERED',
-    courier: 'Olva Courier',
-    trackingNumber: 'OLV-770123',
-  }),
-  'WEB-2026-00005': () => ({ ...DEMO_BASE, code: 'WEB-2026-00005', status: 'CANCELLED' }),
-};
+// A Map (not a plain object) so a user-provided code can never reach inherited members.
+const DEMO_ORDERS = new Map([
+  ['WEB-2026-00001', () => ({ ...DEMO_BASE, code: 'WEB-2026-00001', status: 'PENDING' })],
+  ['WEB-2026-00002', () => ({ ...DEMO_BASE, code: 'WEB-2026-00002', status: 'PREPARING' })],
+  [
+    'WEB-2026-00003',
+    () => ({
+      ...DEMO_BASE,
+      code: 'WEB-2026-00003',
+      status: 'SHIPPED',
+      courier: 'Olva Courier',
+      trackingNumber: 'OLV-884210',
+    }),
+  ],
+  [
+    'WEB-2026-00004',
+    () => ({
+      ...DEMO_BASE,
+      code: 'WEB-2026-00004',
+      status: 'DELIVERED',
+      courier: 'Olva Courier',
+      trackingNumber: 'OLV-770123',
+    }),
+  ],
+  ['WEB-2026-00005', () => ({ ...DEMO_BASE, code: 'WEB-2026-00005', status: 'CANCELLED' })],
+]);
 
 let orderSequence = 1;
 
@@ -142,8 +149,8 @@ export async function getOrderByCode(code) {
       return sessionOrders.get(normalized);
     }
 
-    if (DEMO_ORDERS[normalized]) {
-      return DEMO_ORDERS[normalized]();
+    if (DEMO_ORDERS.has(normalized)) {
+      return DEMO_ORDERS.get(normalized)();
     }
 
     const error = new Error('Pedido no encontrado');
