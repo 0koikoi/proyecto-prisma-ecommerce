@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-frontend
       - name: Ejecutar lint
         working-directory: frontend
@@ -87,7 +87,7 @@ jobs:
       matrix:
         node: ['20', '22']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-frontend
         with:
           node-version: ${{ matrix.node }}
@@ -107,7 +107,7 @@ jobs:
           fi
       - name: Subir reportes
         if: always() && matrix.node == '22'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: reportes-de-pruebas
           path: |
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-frontend
       - name: Compilar
         working-directory: frontend
@@ -135,7 +135,7 @@ jobs:
           echo "### Tamaño del bundle: ${kb} KB (presupuesto ${BUNDLE_BUDGET_KB} KB)" >> "$GITHUB_STEP_SUMMARY"
           [ "$kb" -le "${BUNDLE_BUDGET_KB}" ] || { echo "::error::El bundle JS pesa ${kb} KB y supera el presupuesto de ${BUNDLE_BUDGET_KB} KB"; exit 1; }
       - name: Subir compilación
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: frontend/dist
@@ -148,8 +148,8 @@ jobs:
     timeout-minutes: 10
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: frontend-dist
           path: frontend/dist
@@ -163,7 +163,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-frontend
       - name: npm audit (alta o crítica)
         working-directory: frontend
@@ -178,8 +178,8 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/dependency-review-action@v4
+      - uses: actions/checkout@v7
+      - uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
 
@@ -188,7 +188,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Buscar credenciales en el repositorio
         run: |
           if git grep -nIE "(AKIA[0-9A-Z]{16}|-----BEGIN (RSA |EC )?PRIVATE KEY-----|vercel_[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{36})" -- . ':!.github/workflows/ci.yml'; then
@@ -205,7 +205,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: actionlint
         run: bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.7/scripts/download-actionlint.bash) 1.7.7 && ./actionlint -color
 
@@ -239,7 +239,7 @@ jobs:
       actions: read
       pull-requests: write
     steps:
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v9
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -306,7 +306,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v9
         env:
           PREVIEW_URL: ${{ needs.deploy-pr-preview.outputs.url }}
         with:
@@ -349,7 +349,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Crear release con notas generadas
         env:
           GH_TOKEN: ${{ github.token }}
