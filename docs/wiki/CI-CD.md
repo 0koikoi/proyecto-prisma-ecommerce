@@ -10,22 +10,7 @@ Qué revisa el sistema automático cada vez que abres un PR, cómo leer sus resu
 
 El pipeline está hecho con **GitHub Actions** y vive en `.github/workflows/`. Su trabajo es doble: **proteger** (que nada roto llegue a `develop` o `main`) y **entregar** (publicar en Vercel sin pasos manuales).
 
-```mermaid
-flowchart LR
-    PR[Abres un PR] --> POL[Politica de ramas]
-    PR --> HIG[Higiene del PR]
-    PR --> LINT[Lint]
-    PR --> TEST[Pruebas Node 20 y 22]
-    PR --> BUILD[Compilacion]
-    PR --> SEG[Auditoria y secretos]
-    POL & HIG & LINT & TEST & BUILD & SEG --> OK{CI aprobado}
-    OK -->|falla| REP[Comentario con lo que fallo]
-    OK -->|pasa| REV[Revision y merge]
-    REV -->|develop| STG[Staging en Vercel]
-    REV -->|main| APR[Aprobacion manual]
-    APR --> PRD[Produccion en Vercel]
-    PRD --> REL[Release en GitHub]
-```
+![Al abrir un PR corren tres grupos de verificaciones; si CI aprobado pasa se revisa y se despliega, y si falla el bot comenta qué revisar](images/pipeline-ci.svg)
 
 ## Qué corre y cuándo
 

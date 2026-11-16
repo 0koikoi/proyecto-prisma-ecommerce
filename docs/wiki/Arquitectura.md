@@ -8,29 +8,7 @@ Cómo está organizado el frontend y por qué. La idea central es simple: **las 
 
 ## Las capas
 
-```mermaid
-flowchart TB
-    subgraph UI[Interfaz]
-        PAG[Paginas en feature/*]
-        COM[Componentes en shared/components]
-    end
-    subgraph ESTADO[Estado global]
-        CART[CartContext]
-        TOAST[ToastContext]
-    end
-    subgraph DATOS[Acceso a datos]
-        SVC[Servicios: catalogService, orderService]
-        API[apiClient]
-    end
-    PAG --> COM
-    PAG --> CART
-    PAG --> TOAST
-    PAG --> SVC
-    CART --> SVC
-    SVC -->|VITE_USE_MOCK = true| MOCK[(Datos simulados)]
-    SVC -->|VITE_USE_MOCK = false| API
-    API --> BACK[(Backend)]
-```
+![Cinco capas apiladas: páginas, componentes y contextos, servicios, cliente HTTP y origen de datos](images/arquitectura-capas.svg)
 
 | Capa | Responsabilidad | Qué NO debe hacer |
 | :--- | :--- | :--- |
