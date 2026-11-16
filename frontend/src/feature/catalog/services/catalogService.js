@@ -27,6 +27,13 @@ export async function getProducts(filters = {}) {
       );
     }
 
+    if (filters.size) {
+      const size = String(filters.size).toLowerCase();
+      results = results.filter((product) =>
+        product.variants.some((variant) => variant.size.toLowerCase() === size),
+      );
+    }
+
     if (filters.search) {
       const term = String(filters.search).toLowerCase().trim();
       results = results.filter(
@@ -36,14 +43,37 @@ export async function getProducts(filters = {}) {
       );
     }
 
+    if (filters.sort === 'price-asc' || filters.sort === 'price-desc') {
+      const direction = filters.sort === 'price-asc' ? 1 : -1;
+      results.sort((first, second) => {
+        const firstPrice = Math.min(...first.variants.map((variant) => variant.salePrice));
+        const secondPrice = Math.min(...second.variants.map((variant) => variant.salePrice));
+        return (firstPrice - secondPrice) * direction;
+      });
+    } else if (filters.sort === 'newest') {
+      results.sort((first, second) => {
+        const firstDate = Date.parse(first.createdAt || first.created_at || '');
+        const secondDate = Date.parse(second.createdAt || second.created_at || '');
+
+        if (Number.isFinite(firstDate) && Number.isFinite(secondDate)) {
+          return secondDate - firstDate;
+        }
+
+        return Number(second.id) - Number(first.id);
+      });
+    }
+
     return results;
   }
 
-  // NOTA: Los endpoints /api/public/... son provisionales hasta que el backend los exponga.
-  // const params = new URLSearchParams(filters).toString();
-  // const query = params ? `?${params}` : '';
-  // return apiClient(`/api/public/catalog/products${query}`);
-  return apiClient('/api/public/catalog/products');
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== null && value !== '') {
+      params.set(key, String(value));
+    }
+  }
+  const query = params.toString();
+  return apiClient(`/api/public/catalog/products${query ? `?${query}` : ''}`);
 }
 
 export async function getProductBySlug(slug) {

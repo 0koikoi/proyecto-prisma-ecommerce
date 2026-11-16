@@ -1,0 +1,69 @@
+name: Despliegue en Vercel
+
+# Workflow reutilizable: compila con la CLI de Vercel (prebuilt) y hace una prueba de humo.
+# Secretos: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
+# El proyecto de Vercel debe tener el "Root Directory" VACÍO (la CLI corre dentro de ./frontend).
+
+on:
+  workflow_call:
+    inputs:
+      production:
+        type: boolean
+        required: true
+    outputs:
+      url:
+        description: URL desplegada
+        value: ${{ jobs.deploy.outputs.url }}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    # Producción espera la aprobación configurada en Settings > Environments > production.
+    environment: ${{ inputs.production && 'production' || 'staging' }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VITE_API_URL: ${{ vars.VITE_API_URL }}
+      VITE_USE_MOCK: ${{ vars.VITE_USE_MOCK }}
+      VITE_WHATSAPP_NUMBER: ${{ vars.VITE_WHATSAPP_NUMBER }}
+      TARGET: ${{ inputs.production && 'production' || 'preview' }}
+      PROD_FLAG: ${{ inputs.production && '--prod' || '' }}
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Descargar configuración de Vercel
+        run: npx --yes vercel@latest pull --yes --environment="$TARGET"
+
+      - name: Compilar
+        run: npx --yes vercel@latest build ${PROD_FLAG:+"$PROD_FLAG"}
+
+      - name: Desplegar
+        id: deploy
+        run: |
+          url=$(npx --yes vercel@latest deploy --prebuilt ${PROD_FLAG:+"$PROD_FLAG"} | tail -n 1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### Desplegado ($TARGET): $url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Prueba de humo
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          for _ in 1 2 3; do
+            sleep 5
+            curl --fail --silent --show-error --location --max-time 20 --output /dev/null "$DEPLOY_URL" && exit 0
+          done
+          exit 1

@@ -1,0 +1,358 @@
+name: CI/CD
+
+# Modelo de ramas: feature/* -> PR a develop -> PR develop -> main.
+#   pull_request -> política de ramas, higiene del PR, lint, tests (Node 20/22 + cobertura),
+#                   build, auditoría, escaneo de secretos, revisión de dependencias,
+#                   Lighthouse y vista previa en Vercel por PR
+#   push develop -> mismas verificaciones + vista previa en Vercel (staging)
+#   push main    -> mismas verificaciones + producción en Vercel (con aprobación) + Release
+# Los despliegues son opcionales: define la variable del repositorio VERCEL_DEPLOY=true.
+# Check requerido para la protección de ramas: "CI aprobado".
+# Si algo falla, el job "Reporte en el PR" comenta qué falló y cómo corregirlo.
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  BUNDLE_BUDGET_KB: '900'
+
+jobs:
+  branch-policy:
+    name: Política de ramas
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Solo develop puede fusionarse en main
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          if [ "$BASE_REF" = "main" ] && [ "$HEAD_REF" != "develop" ]; then
+            echo "::error::Los PR hacia main deben venir de develop (esta rama es '$HEAD_REF'). Abre el PR hacia develop."
+            exit 1
+          fi
+
+  pr-hygiene:
+    name: Higiene del PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Título con Conventional Commits
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert|release)(\([a-zA-Z0-9_-]+\))?!?: .+'
+          if ! [[ "$PR_TITLE" =~ $pattern ]]; then
+            echo "::error::El título del PR debe seguir Conventional Commits, por ejemplo 'feat(checkout): agrega formulario (#9)'. Título actual: $PR_TITLE"
+            exit 1
+          fi
+      - name: Issue vinculado (solo advertencia)
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if ! grep -qiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' <<<"$PR_BODY"; then
+            echo "::warning::La descripción del PR no tiene 'Closes #<issue>' para cerrar el issue."
+          fi
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-frontend
+      - name: Ejecutar lint
+        working-directory: frontend
+        run: npm run lint
+
+  test:
+    name: Pruebas (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-frontend
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Pruebas unitarias con cobertura
+        working-directory: frontend
+        run: npm run test:ci
+      - name: Resumen de cobertura
+        if: always() && matrix.node == '22'
+        working-directory: frontend
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+              const t = require('./coverage/coverage-summary.json').total;
+              const row = (k) => '| ' + k + ' | ' + t[k].pct + '% |';
+              console.log(['### Cobertura', '', '| Métrica | % |', '| --- | --- |', row('lines'), row('statements'), row('functions'), row('branches')].join('\n'));
+            " >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Subir reportes
+        if: always() && matrix.node == '22'
+        uses: actions/upload-artifact@v4
+        with:
+          name: reportes-de-pruebas
+          path: |
+            frontend/reports/junit.xml
+            frontend/coverage/lcov.info
+          if-no-files-found: ignore
+          retention-days: 14
+
+  build:
+    name: Compilación
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-frontend
+      - name: Compilar
+        working-directory: frontend
+        run: npm run build
+      - name: Presupuesto del bundle
+        working-directory: frontend
+        run: |
+          test -f dist/index.html
+          total=$(find dist/assets -name "*.js" -exec cat {} + | wc -c)
+          kb=$((total / 1024))
+          echo "### Tamaño del bundle: ${kb} KB (presupuesto ${BUNDLE_BUDGET_KB} KB)" >> "$GITHUB_STEP_SUMMARY"
+          [ "$kb" -le "${BUNDLE_BUDGET_KB}" ] || { echo "::error::El bundle JS pesa ${kb} KB y supera el presupuesto de ${BUNDLE_BUDGET_KB} KB"; exit 1; }
+      - name: Subir compilación
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse (no bloquea)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./frontend/lighthouserc.json
+          uploadArtifacts: true
+
+  security-audit:
+    name: Auditoría de dependencias
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-frontend
+      - name: npm audit (alta o crítica)
+        working-directory: frontend
+        run: npm audit --omit=dev --audit-level=high
+
+  dependency-review:
+    name: Revisión de dependencias
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Opcional: requiere el grafo de dependencias (Settings > Advanced Security). Define DEPENDENCY_REVIEW=true.
+    if: github.event_name == 'pull_request' && vars.DEPENDENCY_REVIEW == 'true'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  secret-scan:
+    name: Escaneo de secretos
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Buscar credenciales en el repositorio
+        run: |
+          if git grep -nIE "(AKIA[0-9A-Z]{16}|-----BEGIN (RSA |EC )?PRIVATE KEY-----|vercel_[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{36})" -- . ':!.github/workflows/ci.yml'; then
+            echo "::error::Posible secreto en el repositorio"; exit 1
+          fi
+      - name: Bloquear archivos .env versionados
+        run: |
+          if git ls-files | grep -E '(^|/)\.env($|\.)' | grep -vE '\.example$'; then
+            echo "::error::Hay un archivo .env versionado"; exit 1
+          fi
+
+  actionlint:
+    name: Lint de workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: actionlint
+        run: bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.7/scripts/download-actionlint.bash) 1.7.7 && ./actionlint -color
+
+  ci-passed:
+    name: CI aprobado
+    if: always()
+    needs: [branch-policy, pr-hygiene, lint, test, build, security-audit, secret-scan, actionlint]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Evaluar resultados
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS"
+          if echo "$RESULTS" | grep -Eq '"result": "(failure|cancelled)"'; then
+            echo "::error::Fallaron uno o más jobs requeridos"; exit 1
+          fi
+
+  reporte-pr:
+    name: Reporte en el PR
+    needs: ci-passed
+    # Corre aunque algo haya fallado. Solo en PRs del mismo repo: en forks el token es de solo lectura.
+    if: >-
+      always() &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const corto = pr.head.sha.slice(0, 7);
+            const urlRun = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+              owner, repo, run_id: context.runId, per_page: 100,
+            });
+            const fallidos = jobs.filter((j) => j.conclusion === 'failure');
+
+            const pistas = [
+              ['Política de ramas', 'Los PR hacia main solo pueden venir de develop. Cierra este y ábrelo apuntando a develop.'],
+              ['Higiene del PR', 'El título tiene que seguir Conventional Commits, por ejemplo: feat(checkout): agrega formulario (#9).'],
+              ['Lint de workflows', 'Corre actionlint en la raíz del repo y arregla lo que marque.'],
+              ['Lint', 'Corre npm run lint dentro de frontend y corrige lo que marque.'],
+              ['Pruebas', 'Corre npm run test:ci dentro de frontend. Si todas pasan, revisa que no haya bajado la cobertura.'],
+              ['Compilación', 'Corre npm run build dentro de frontend. Si el error es del presupuesto, hay que bajar el peso del bundle.'],
+              ['Auditoría', 'Corre npm audit --omit=dev dentro de frontend y actualiza la dependencia que aparece como vulnerable.'],
+              ['Escaneo de secretos', 'Saca la credencial o el archivo .env del repo y cambia la clave que quedó expuesta.'],
+            ];
+            const pistaPara = (nombre) => pistas.find(([k]) => nombre.includes(k))?.[1];
+
+            const marca = '<!-- reporte-ci -->';
+            let cuerpo;
+            if (fallidos.length === 0) {
+              cuerpo = `${marca}\nTodo en orden: las verificaciones pasaron en el commit ${corto}. Detalle en el [run completo](${urlRun}).`;
+            } else {
+              const lineas = fallidos.map((j) => {
+                const pasos = (j.steps || []).filter((p) => p.conclusion === 'failure').map((p) => p.name).join(', ');
+                const pista = pistaPara(j.name);
+                const detalle = pasos ? `falló en "${pasos}"` : 'falló';
+                return `- ${j.name}: ${detalle} ([logs](${j.html_url})).${pista ? ` ${pista}` : ''}`;
+              });
+              cuerpo = `${marca}\nEl CI falló en el commit ${corto}. Esto es lo que hay que revisar:\n\n${lineas.join('\n')}\n\nEl resto del detalle está en el [run completo](${urlRun}). Cuando subas un commit nuevo actualizo este comentario.`;
+            }
+
+            const comentarios = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number: pr.number });
+            const existente = comentarios.find((c) => c.body && c.body.includes(marca));
+            if (existente) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existente.id, body: cuerpo });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body: cuerpo });
+            }
+
+  deploy-pr-preview:
+    name: Vista previa del PR (Vercel)
+    needs: ci-passed
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      vars.VERCEL_DEPLOY == 'true'
+    uses: ./.github/workflows/vercel-deploy.yml
+    with:
+      production: false
+    secrets: inherit
+
+  comment-preview:
+    name: Comentar URL de la vista previa
+    needs: deploy-pr-preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ needs.deploy-pr-preview.outputs.url }}
+        with:
+          script: |
+            const marker = '<!-- vercel-preview -->';
+            const body = `${marker}\nVista previa de este PR: ${process.env.PREVIEW_URL}`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+  deploy-staging:
+    name: Desplegar staging (Vercel)
+    needs: ci-passed
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && vars.VERCEL_DEPLOY == 'true'
+    uses: ./.github/workflows/vercel-deploy.yml
+    with:
+      production: false
+    secrets: inherit
+
+  deploy-production:
+    name: Desplegar producción (Vercel)
+    needs: ci-passed
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.VERCEL_DEPLOY == 'true'
+    uses: ./.github/workflows/vercel-deploy.yml
+    with:
+      production: true
+    secrets: inherit
+
+  release:
+    name: Release en GitHub
+    needs: deploy-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Crear release con notas generadas
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="release-$(date -u +%Y%m%d)-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" --target "$GITHUB_SHA" --generate-notes --title "$tag"
