@@ -1,8 +1,8 @@
-name: Vercel deploy
+name: Despliegue en Vercel
 
-# Reusable workflow: builds with the Vercel CLI (prebuilt) and smoke-tests the result.
-# Secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
-# The Vercel project must have an EMPTY "Root Directory" (the CLI runs inside ./frontend).
+# Workflow reutilizable: compila con la CLI de Vercel (prebuilt) y hace una prueba de humo.
+# Secretos: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
+# El proyecto de Vercel debe tener el "Root Directory" VACÍO (la CLI corre dentro de ./frontend).
 
 on:
   workflow_call:
@@ -12,7 +12,7 @@ on:
         required: true
     outputs:
       url:
-        description: Deployed URL
+        description: URL desplegada
         value: ${{ jobs.deploy.outputs.url }}
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 15
     outputs:
       url: ${{ steps.deploy.outputs.url }}
-    # Production waits for the approval configured in Settings > Environments > production.
+    # Producción espera la aprobación configurada en Settings > Environments > production.
     environment: ${{ inputs.production && 'production' || 'staging' }}
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -45,20 +45,20 @@ jobs:
         with:
           node-version: 22
 
-      - name: Pull Vercel settings
+      - name: Descargar configuración de Vercel
         run: npx --yes vercel@latest pull --yes --environment="$TARGET"
 
-      - name: Build
+      - name: Compilar
         run: npx --yes vercel@latest build ${PROD_FLAG:+"$PROD_FLAG"}
 
-      - name: Deploy
+      - name: Desplegar
         id: deploy
         run: |
           url=$(npx --yes vercel@latest deploy --prebuilt ${PROD_FLAG:+"$PROD_FLAG"} | tail -n 1)
           echo "url=$url" >> "$GITHUB_OUTPUT"
-          echo "### Deployed ($TARGET): $url" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Desplegado ($TARGET): $url" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Smoke test
+      - name: Prueba de humo
         env:
           DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         run: |
