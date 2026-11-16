@@ -334,10 +334,29 @@ jobs:
       alias: tienda-prisma-staging.vercel.app
     secrets: inherit
 
+  diagnostico-despliegue:
+    name: Diagnóstico de despliegue
+    needs: ci-passed
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Mostrar lo que ve la condición de producción
+        env:
+          EVENTO: ${{ github.event_name }}
+          RAMA: ${{ github.ref }}
+          VARIABLE: ${{ vars.VERCEL_DEPLOY }}
+          CI: ${{ needs.ci-passed.result }}
+        run: |
+          echo "evento=$EVENTO"
+          echo "rama=$RAMA"
+          echo "VERCEL_DEPLOY=$VARIABLE"
+          echo "ci-passed=$CI"
+
   deploy-production:
     name: Desplegar producción (Vercel)
     needs: ci-passed
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.VERCEL_DEPLOY == 'true'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && vars.VERCEL_DEPLOY == 'true'
     uses: ./.github/workflows/vercel-deploy.yml
     with:
       production: true
