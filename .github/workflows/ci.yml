@@ -296,6 +296,7 @@ jobs:
     uses: ./.github/workflows/vercel-deploy.yml
     with:
       production: false
+      alias: tienda-prisma-pr-${{ github.event.number }}.vercel.app
     secrets: inherit
 
   comment-preview:
@@ -330,6 +331,7 @@ jobs:
     uses: ./.github/workflows/vercel-deploy.yml
     with:
       production: false
+      alias: tienda-prisma-staging.vercel.app
     secrets: inherit
 
   deploy-production:
@@ -339,6 +341,7 @@ jobs:
     uses: ./.github/workflows/vercel-deploy.yml
     with:
       production: true
+      alias: tienda-prisma.vercel.app
     secrets: inherit
 
   release:
