@@ -3,6 +3,49 @@ import { validateName, validatePhone } from '../../../shared/utils/validators';
 import { findVariantInCatalog } from '../../catalog/services/catalogService';
 
 const sessionOrders = new Map();
+const DEMO_BASE = {
+  createdAt: new Date().toISOString(),
+  customerName: 'Cliente Demo',
+  customerPhone: '987654321',
+  shippingAddress: 'Jr. General Prado 450, Huánuco',
+  reference: 'Frente a la plazuela',
+  deliveryScope: 'LOCAL',
+  requestedPaymentMethod: 'YAPE',
+  items: [
+    {
+      variantId: 201,
+      name: 'Polera oversize negra',
+      size: 'M',
+      color: 'Negro',
+      quantity: 1,
+      unitPrice: 59.9,
+      subtotal: 59.9,
+    },
+  ],
+  subtotal: 59.9,
+};
+
+// Demo orders available in mock mode so every tracking state can be explored.
+const DEMO_ORDERS = {
+  'WEB-2026-00001': () => ({ ...DEMO_BASE, code: 'WEB-2026-00001', status: 'PENDING' }),
+  'WEB-2026-00002': () => ({ ...DEMO_BASE, code: 'WEB-2026-00002', status: 'PREPARING' }),
+  'WEB-2026-00003': () => ({
+    ...DEMO_BASE,
+    code: 'WEB-2026-00003',
+    status: 'SHIPPED',
+    courier: 'Olva Courier',
+    trackingNumber: 'OLV-884210',
+  }),
+  'WEB-2026-00004': () => ({
+    ...DEMO_BASE,
+    code: 'WEB-2026-00004',
+    status: 'DELIVERED',
+    courier: 'Olva Courier',
+    trackingNumber: 'OLV-770123',
+  }),
+  'WEB-2026-00005': () => ({ ...DEMO_BASE, code: 'WEB-2026-00005', status: 'CANCELLED' }),
+};
+
 let orderSequence = 1;
 
 function buildOrderCode() {
@@ -99,30 +142,8 @@ export async function getOrderByCode(code) {
       return sessionOrders.get(normalized);
     }
 
-    if (normalized === 'WEB-2026-00001') {
-      return {
-        code: 'WEB-2026-00001',
-        status: 'PENDING',
-        createdAt: new Date().toISOString(),
-        customerName: 'Cliente Demo',
-        customerPhone: '987654321',
-        shippingAddress: 'Jr. General Prado 450, Huánuco',
-        reference: 'Frente a la plazuela',
-        deliveryScope: 'LOCAL',
-        requestedPaymentMethod: 'YAPE',
-        items: [
-          {
-            variantId: 201,
-            name: 'Polera oversize negra',
-            size: 'M',
-            color: 'Negro',
-            quantity: 1,
-            unitPrice: 59.9,
-            subtotal: 59.9,
-          },
-        ],
-        subtotal: 59.9,
-      };
+    if (DEMO_ORDERS[normalized]) {
+      return DEMO_ORDERS[normalized]();
     }
 
     const error = new Error('Pedido no encontrado');
