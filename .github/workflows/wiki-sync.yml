@@ -1,0 +1,50 @@
+name: Publicar wiki
+
+# Publica el contenido de docs/wiki en el wiki de GitHub cada vez que cambia en develop.
+# Requisitos: el wiki debe estar habilitado y tener al menos una página (créala una vez desde la web),
+# y la variable del repositorio WIKI_SYNC debe valer "true".
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'docs/wiki/**'
+  workflow_dispatch:
+
+concurrency:
+  group: wiki-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    name: Sincronizar con el wiki
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: vars.WIKI_SYNC == 'true'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Clonar el wiki
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: git clone --quiet "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.wiki.git" wiki-repo
+
+      - name: Copiar las páginas
+        run: rsync -a --delete --exclude '.git' docs/wiki/ wiki-repo/
+
+      - name: Publicar los cambios
+        working-directory: wiki-repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "El wiki ya está al día."
+            exit 0
+          fi
+          git commit --quiet -m "docs(wiki): sincroniza con docs/wiki (${GITHUB_SHA::7})"
+          git push --quiet origin HEAD
