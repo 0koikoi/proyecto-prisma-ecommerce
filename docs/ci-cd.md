@@ -46,6 +46,18 @@ Al terminar el CI de un PR, el job `Reporte en el PR` publica (y luego actualiza
 
 Corre dentro del propio workflow, así que funciona desde cualquier rama sin depender de la rama por defecto. En PRs desde forks no comenta, porque ese token es de solo lectura.
 
+## Direcciones fijas
+
+Cada despliegue de Vercel tiene una URL única con un código (por ejemplo `prisma-bim8bd5qd-leosles-projects.vercel.app`). Para tener direcciones estables, el pipeline asigna un dominio fijo `*.vercel.app` después de cada despliegue y hace la prueba de humo sobre él.
+
+| Entorno | Dirección |
+| --- | --- |
+| Producción (`main`) | `tienda-prisma.vercel.app` |
+| Staging (`develop`) | `tienda-prisma-staging.vercel.app` |
+| Vista previa de un PR | `tienda-prisma-pr-<número>.vercel.app` (se actualiza con cada push del PR) |
+
+El dominio debe estar libre: si otra cuenta ya lo usa, el paso "Asignar dominio fijo" falla y hay que elegir otro nombre en `ci.yml` (parámetro `alias`).
+
 ## Configuración
 
 1. Secretos: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.

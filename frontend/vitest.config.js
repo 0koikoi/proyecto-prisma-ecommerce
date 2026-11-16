@@ -14,6 +14,7 @@ export default defineConfig({
         'src/shared/utils/formatters.js',
         'src/shared/utils/zodResolver.js',
         'src/feature/checkout/checkoutSchema.js',
+        'src/feature/checkout/services/**/*.js',
       ],
       thresholds: { lines: 80, functions: 80, statements: 80, branches: 70 },
     },
